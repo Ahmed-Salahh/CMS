@@ -1,0 +1,59 @@
+{
+  "screens": [
+    {
+      "screen_title": "Welcome",
+      "screen_name": "welcome",
+      "showInSidebar": false,
+
+      "icon": "BarChart",
+      "components": [
+        {
+          "file_name": "welcome",
+          "api_url": "/reports/create_user/",
+          "title": "Signed in successfully!",
+          "redirect_link": "/reports"
+        }
+      ]
+    },
+    {
+      "screen_title": "Reports",
+      "screen_name": "reports",
+
+      "showInSidebar": true,
+      "icon": "BarChart",
+      "components": [
+        {
+          "file_name": "cards",
+          "type": "dynamic",
+          "api_url": "/reports/list_reports",
+          "table_name": "",
+          "card_title": "ReportName",
+          "card_description": "ReportType",
+          "card_id": "ReportID",
+          "card_image": "",
+          "report_image": true,
+          "redirect_link": "/details/view-report",
+          "filter_by_user_email": true
+        }
+      ]
+    },
+    {
+      "screen_title": "",
+      "screen_name": "view-report",
+      "table_name": "",
+      "api_url": "/reports/view_report/",
+      "showInSidebar": false,
+      "params": [
+        {
+          "param_column": "report_id",
+          "param_value": "id"
+        }
+      ],
+      "components": [
+        {
+          "file_name": "view-report"
+        }
+      ]
+    }
+  ]
+}

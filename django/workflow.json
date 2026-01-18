@@ -1,0 +1,259 @@
+{
+  "workflows": [
+    {
+      "id": "6d9ab69c-86dc-4f5c-aabf-ab1deb99f0e7",
+      "name": "System Initialization Workflow",
+      "description": "Workflow to initialize the system with default roles and permissions.",
+      "version": "1.0",
+      "steps": [
+        {
+          "id": "step_1",
+          "type": "form",
+          "next_step": "step_2",
+          "name": "Initialize User Roles",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_001",
+            "title": "User Role Initialization",
+            "description": "Create default user roles in the system.",
+            "fields": [
+              {
+                "id": "role_names",
+                "label": "Roles to Create",
+                "type": "textarea",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Roles have been created successfully."
+            }
+          }
+        },
+        {
+          "id": "step_2",
+          "type": "form",
+          "next_step": "step_3",
+          "name": "Configure Email Services",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_002",
+            "title": "Email Configuration",
+            "description": "Configure email settings for the application.",
+            "fields": [
+              {
+                "id": "smtp_server",
+                "label": "SMTP Server",
+                "type": "text",
+                "required": true
+              },
+              {
+                "id": "smtp_port",
+                "label": "SMTP Port",
+                "type": "number",
+                "required": true
+              },
+              {
+                "id": "email_username",
+                "label": "Email Username",
+                "type": "email",
+                "required": true
+              },
+              {
+                "id": "email_password",
+                "label": "Email Password",
+                "type": "text",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Email services have been configured successfully."
+            }
+          }
+        },
+        {
+          "id": "step_3",
+          "type": "form",
+          "next_step": "step_4",
+          "name": "Load Status Dictionary",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_003",
+            "title": "Status Dictionary Setup",
+            "description": "Load the applicant status dictionary into the system.",
+            "fields": [
+              {
+                "id": "status_codes",
+                "label": "Status Codes",
+                "type": "textarea",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Status dictionary has been loaded."
+            }
+          }
+        },
+        {
+          "id": "step_4",
+          "type": "form",
+          "next_step": "step_5",
+          "name": "Register External Integrations",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_004",
+            "title": "External Integrations Registration",
+            "description": "Register external service integrations.",
+            "fields": [
+              {
+                "id": "integration_name",
+                "label": "Integration Name",
+                "type": "text",
+                "required": true
+              },
+              {
+                "id": "api_key",
+                "label": "API Key",
+                "type": "text",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "External integrations have been registered."
+            }
+          }
+        },
+        {
+          "id": "step_5",
+          "type": "form",
+          "name": "Enforce Security Measures",
+          "assignedTo": "{{step_1.user_email}}",
+          "form": {
+            "id": "form_005",
+            "title": "Security Measures Configuration",
+            "description": "Enforce password reset and MFA setup for first admin login.",
+            "fields": [
+              {
+                "id": "password_reset",
+                "label": "Reset Password",
+                "type": "text",
+                "required": true
+              },
+              {
+                "id": "enable_mfa",
+                "label": "Enable MFA",
+                "type": "select",
+                "options": [
+                  "Yes",
+                  "No"
+                ],
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Security measures have been implemented."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "692d550e-80c4-4c3e-bcd8-376ffe2b9fc2",
+      "name": "First-Use Guidance Workflow",
+      "description": "Guide admins through the first use of the system.",
+      "version": "1.0",
+      "steps": [
+        {
+          "id": "step_1",
+          "type": "form",
+          "next_step": "step_2",
+          "name": "Display Empty-State Message",
+          "form": {
+            "id": "form_001",
+            "title": "Welcome to the System",
+            "description": "Create your first program to get started.",
+            "fields": [],
+            "submitAction": {
+              "type": "message",
+              "message": "You are ready to create your first program."
+            }
+          }
+        },
+        {
+          "id": "step_2",
+          "type": "form",
+          "next_step": "step_3",
+          "name": "Program Creation Wizard - Basics",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_002",
+            "title": "Program Basics Setup",
+            "description": "Enter initial parameters for your program.",
+            "fields": [
+              {
+                "id": "program_name",
+                "label": "Program Name",
+                "type": "text",
+                "required": true
+              },
+              {
+                "id": "program_description",
+                "label": "Program Description",
+                "type": "textarea",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Program basics have been set."
+            }
+          }
+        },
+        {
+          "id": "step_3",
+          "type": "form",
+          "next_step": "step_4",
+          "name": "Program Creation Wizard - Details",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_003",
+            "title": "Program Details Setup",
+            "description": "Complete details for your program.",
+            "fields": [
+              {
+                "id": "program_criteria",
+                "label": "Admission Criteria",
+                "type": "textarea",
+                "required": true
+              }
+            ],
+            "submitAction": {
+              "type": "message",
+              "message": "Program details have been entered."
+            }
+          }
+        },
+        {
+          "id": "step_4",
+          "type": "form",
+          "name": "Publish Program",
+          "assignedTo": "admin@company.com",
+          "form": {
+            "id": "form_004",
+            "title": "Publication of Program",
+            "description": "Publish your program and open it for applications.",
+            "fields": [],
+            "submitAction": {
+              "type": "message",
+              "message": "Program has been published successfully."
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
