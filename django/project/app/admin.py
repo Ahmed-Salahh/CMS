@@ -106,3 +106,27 @@ admin.site.register(AuditLog, AuditLogAdmin)
 
 admin.site.site_header = "My Admin Site"
 admin.site.site_title = "Admin Site Title"
+
+@admin.register(Program)
+class ProgramAdmin(ModelAdmin):
+    list_display = ('ProgramID', 'ProgramName', 'Status', 'Duration', 'Location', 'StartDate', 'ApplicationDeadline')
+    search_fields = ('ProgramName', 'ProgramDescription', 'TargetAudience')
+    list_filter = ('Status', 'Language', 'Location', 'TargetAudience')
+    date_hierarchy = 'StartDate'
+    ordering = ('-CreatedAt',)
+    
+    fieldsets = (
+        ('Basic Information', {
+            'fields': ('ProgramName', 'ProgramDescription', 'ProgramImage', 'Status')
+        }),
+        ('Program Details', {
+            'fields': ('Duration', 'Language', 'Location', 'TargetAudience')
+        }),
+        ('Extended Information', {
+            'fields': ('Requirements', 'Benefits', 'Curriculum'),
+            'classes': ('collapse',)
+        }),
+        ('Important Dates', {
+            'fields': ('StartDate', 'EndDate', 'ApplicationDeadline')
+        }),
+    )

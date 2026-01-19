@@ -19,7 +19,6 @@ from urllib.parse import unquote
 import json
 import random
 
-
 # Workflow Management Endpoints
 
 @api_view(['GET'])
@@ -861,3 +860,165 @@ def audit_log_view(request, id=None):
         audit_log = AuditLog.objects.get(AuditLogID=id)
         audit_log.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+
+# ==================== PROGRAMS VIEWS ====================
+
+@api_view(['GET'])
+def list_programs(request):
+    """
+    List all programs with filtering, sorting, and pagination support
+    Query parameters:
+    - status: filter by status (open, upcoming, closed, all)
+    - search: search in program name, description, and target audience
+    - sort: sort order (recent, oldest, name, name-desc)
+    - email: filter by user group access
+    - start_date: filter programs starting from this date (YYYY-MM-DD)
+    - end_date: filter programs ending before this date (YYYY-MM-DD)
+    - page: page number (default: 1)
+    - per_page: items per page (default: 9)
+    """
+    try:
+        # Get query parameters
+        status_filter = request.GET.get('status', 'all')
+        search_query = request.GET.get('search', '')
+        sort_order = request.GET.get('sort', 'recent')
+        user_email = request.GET.get('email', None)
+        start_date = request.GET.get('start_date', None)
+        end_date = request.GET.get('end_date', None)
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 9))
+        
+        # Start with all programs
+        programs = Program.objects.all()
+        
+        # Filter by status if provided
+        if status_filter and status_filter != 'all':
+            programs = programs.filter(Status=status_filter)
+        
+        # Search filter
+        if search_query:
+            from django.db.models import Q
+            programs = programs.filter(
+                Q(ProgramName__icontains=search_query) |
+                Q(ProgramDescription__icontains=search_query) |
+                Q(TargetAudience__icontains=search_query)
+            )
+        
+        # Date range filter
+        if start_date:
+            try:
+                start_date_parsed = datetime.strptime(start_date, '%Y-%m-%d').date()
+                programs = programs.filter(StartDate__gte=start_date_parsed)
+            except ValueError:
+                pass  # Invalid date format, skip filter
+        
+        if end_date:
+            try:
+                end_date_parsed = datetime.strptime(end_date, '%Y-%m-%d').date()
+                programs = programs.filter(StartDate__lte=end_date_parsed)
+            except ValueError:
+                pass  # Invalid date format, skip filter
+        
+        # Filter by user group if email provided
+        if user_email:
+            try:
+                user = User.objects.get(email=user_email)
+                user_groups = user.groups.all()
+                programs = programs.filter(program_groups__group__in=user_groups).distinct()
+            except User.DoesNotExist:
+                pass
+        
+        # Apply sorting
+        if sort_order == 'recent':
+            programs = programs.order_by('-StartDate', '-CreatedAt')
+        elif sort_order == 'oldest':
+            programs = programs.order_by('StartDate', 'CreatedAt')
+        elif sort_order == 'name':
+            programs = programs.order_by('ProgramName')
+        elif sort_order == 'name-desc':
+            programs = programs.order_by('-ProgramName')
+        else:
+            programs = programs.order_by('-CreatedAt')
+        
+        # Calculate pagination
+        total_programs = programs.count()
+        total_pages = (total_programs + per_page - 1) // per_page  # Ceiling division
+        
+        # Apply pagination
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        programs = programs[start_index:end_index]
+        
+        # Serialize programs
+        programs_data = []
+        for program in programs:
+            program_dict = {
+                'ProgramID': str(program.ProgramID),
+                'ProgramName': program.ProgramName,
+                'ProgramDescription': program.ProgramDescription,
+                'ProgramImage': program.ProgramImage,
+                'Duration': program.Duration,
+                'Language': program.Language,
+                'Location': program.Location,
+                'TargetAudience': program.TargetAudience,
+                'Status': program.Status,
+                'StartDate': program.StartDate.isoformat() if program.StartDate else None,
+                'EndDate': program.EndDate.isoformat() if program.EndDate else None,
+                'DaysLeft': program.days_left,
+                'HoursLeft': program.hours_left,
+            }
+            programs_data.append(program_dict)
+        
+        return Response({
+            "programs": programs_data,
+            "total": total_programs,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": total_pages,
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_program(request, program_id):
+    """
+    Get a single program by ID
+    """
+    try:
+        program = Program.objects.get(ProgramID=program_id)
+        
+        program_data = {
+            'ProgramID': str(program.ProgramID),
+            'ProgramName': program.ProgramName,
+            'ProgramDescription': program.ProgramDescription,
+            'ProgramImage': program.ProgramImage,
+            'Duration': program.Duration,
+            'Language': program.Language,
+            'Location': program.Location,
+            'TargetAudience': program.TargetAudience,
+            'Status': program.Status,
+            'Requirements': program.Requirements,
+            'Benefits': program.Benefits,
+            'Curriculum': program.Curriculum,
+            'StartDate': program.StartDate.isoformat() if program.StartDate else None,
+            'EndDate': program.EndDate.isoformat() if program.EndDate else None,
+            'ApplicationDeadline': program.ApplicationDeadline.isoformat() if program.ApplicationDeadline else None,
+            'DaysLeft': program.days_left,
+            'HoursLeft': program.hours_left,
+            'CreatedAt': program.CreatedAt.isoformat() if program.CreatedAt else None,
+            'UpdatedAt': program.UpdatedAt.isoformat() if program.UpdatedAt else None,
+        }
+        
+        return Response({
+            "program": program_data
+        }, status=status.HTTP_200_OK)
+        
+    except Program.DoesNotExist:
+        return Response({"error": "Program not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
