@@ -242,3 +242,88 @@ class Program(models.Model):
                 return int((total_seconds % 86400) / 3600)
             return 0
         return None
+
+
+class Media(models.Model):
+    TYPE_CHOICES = [
+        ('news', 'News'),
+        ('events', 'Events'),
+        ('gallery', 'Gallery'),
+        ('others', 'Others'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('upcoming', 'Upcoming'),
+        ('completed', 'Completed'),
+    ]
+    
+    MEDIA_TYPE_CHOICES = [
+        ('image', 'Image'),
+        ('video', 'Video'),
+    ]
+    
+    MediaID = models.AutoField(primary_key=True)
+    Title = models.CharField(max_length=255)
+    Description = models.TextField()
+    Image = models.URLField(max_length=500)
+    Type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='news')
+    
+    # Event-specific fields
+    EventStatus = models.CharField(
+        max_length=20, 
+        choices=STATUS_CHOICES, 
+        blank=True, 
+        null=True,
+        help_text="Status for event type only"
+    )
+    EventDate = models.DateTimeField(
+        blank=True, 
+        null=True,
+        help_text="Event date (for upcoming events countdown)"
+    )
+    
+    # Gallery-specific fields
+    MediaType = models.CharField(
+        max_length=20,
+        choices=MEDIA_TYPE_CHOICES,
+        blank=True,
+        null=True,
+        help_text="Media type for gallery items"
+    )
+    Facility = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Facility name for gallery items"
+    )
+    
+    # Timestamps
+    CreatedAt = models.DateTimeField(auto_now_add=True)
+    UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'Media'
+        verbose_name_plural = 'Media'
+        ordering = ['-CreatedAt']
+    
+    def __str__(self):
+        return f"{self.Title} ({self.get_Type_display()})"
+    
+    @property
+    def days_left(self):
+        """Calculate days left until event date (for upcoming events)"""
+        if self.EventDate and self.Type == 'events' and self.EventStatus == 'upcoming':
+            delta = self.EventDate - timezone.now()
+            return max(0, delta.days)
+        return None
+    
+    @property
+    def hours_left(self):
+        """Calculate hours left until event date (for upcoming events)"""
+        if self.EventDate and self.Type == 'events' and self.EventStatus == 'upcoming':
+            delta = self.EventDate - timezone.now()
+            total_seconds = delta.total_seconds()
+            if total_seconds > 0:
+                return int((total_seconds % 86400) / 3600)
+            return 0
+        return None

@@ -1022,3 +1022,148 @@ def get_program(request, program_id):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+# Media Endpoints
+
+@api_view(['GET'])
+def list_media(request):
+    """
+    List all media items with filtering, sorting, and pagination support
+    Query parameters:
+    - type: filter by type (news, events, gallery, others, all)
+    - search: search in title and description
+    - sort: sort order (recent, oldest, title, title-desc)
+    - date: filter by start date (YYYY-MM-DD) - events from this date onwards
+    - media_type: filter by media type (image, video) - for gallery
+    - event_status: filter by event status (upcoming, completed) - for events
+    - page: page number (default: 1)
+    - per_page: items per page (default: 8)
+    """
+    try:
+        # Get query parameters
+        type_filter = request.GET.get('type', 'all')
+        search_query = request.GET.get('search', '')
+        sort_order = request.GET.get('sort', 'recent')
+        date_filter = request.GET.get('date', '')
+        media_type_filter = request.GET.get('media_type', 'all')
+        event_status_filter = request.GET.get('event_status', 'all')
+        page = int(request.GET.get('page', 1))
+        per_page = int(request.GET.get('per_page', 8))
+        
+        # Start with all media
+        media_items = Media.objects.all()
+        
+        # Filter by type if provided
+        if type_filter and type_filter != 'all':
+            media_items = media_items.filter(Type=type_filter)
+        
+        # Filter by start date (events from this date onwards)
+        if date_filter:
+            from datetime import datetime
+            try:
+                filter_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+                media_items = media_items.filter(EventDate__date__gte=filter_date)
+            except ValueError:
+                pass  # Invalid date format, ignore filter
+        
+        # Filter by media type (image/video) - only for gallery
+        if media_type_filter and media_type_filter != 'all':
+            media_items = media_items.filter(MediaType=media_type_filter)
+        
+        # Filter by event status (upcoming/completed) - only for events
+        if event_status_filter and event_status_filter != 'all':
+            media_items = media_items.filter(EventStatus=event_status_filter)
+        
+        # Search filter
+        if search_query:
+            from django.db.models import Q
+            media_items = media_items.filter(
+                Q(Title__icontains=search_query) |
+                Q(Description__icontains=search_query)
+            )
+        
+        # Apply sorting
+        if sort_order == 'recent':
+            media_items = media_items.order_by('-CreatedAt')
+        elif sort_order == 'oldest':
+            media_items = media_items.order_by('CreatedAt')
+        elif sort_order == 'title':
+            media_items = media_items.order_by('Title')
+        elif sort_order == 'title-desc':
+            media_items = media_items.order_by('-Title')
+        else:
+            media_items = media_items.order_by('-CreatedAt')
+        
+        # Calculate pagination
+        total_media = media_items.count()
+        total_pages = (total_media + per_page - 1) // per_page  # Ceiling division
+        
+        # Apply pagination
+        start_index = (page - 1) * per_page
+        end_index = start_index + per_page
+        media_items = media_items[start_index:end_index]
+        
+        # Serialize media
+        media_data = []
+        for media in media_items:
+            media_dict = {
+                'MediaID': str(media.MediaID),
+                'Title': media.Title,
+                'Description': media.Description,
+                'Image': media.Image,
+                'Type': media.Type,
+                'EventStatus': media.EventStatus,
+                'EventDate': media.EventDate.isoformat() if media.EventDate else None,
+                'MediaType': media.MediaType,
+                'Facility': media.Facility,
+                'DaysLeft': media.days_left,
+                'HoursLeft': media.hours_left,
+                'CreatedAt': media.CreatedAt.isoformat() if media.CreatedAt else None,
+                'UpdatedAt': media.UpdatedAt.isoformat() if media.UpdatedAt else None,
+            }
+            media_data.append(media_dict)
+        
+        return Response({
+            "media": media_data,
+            "total": total_media,
+            "page": page,
+            "per_page": per_page,
+            "total_pages": total_pages,
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_media(request, media_id):
+    """
+    Get a single media item by ID
+    """
+    try:
+        media = Media.objects.get(MediaID=media_id)
+        
+        media_data = {
+            'MediaID': str(media.MediaID),
+            'Title': media.Title,
+            'Description': media.Description,
+            'Image': media.Image,
+            'Type': media.Type,
+            'EventStatus': media.EventStatus,
+            'EventDate': media.EventDate.isoformat() if media.EventDate else None,
+            'MediaType': media.MediaType,
+            'Facility': media.Facility,
+            'DaysLeft': media.days_left,
+            'HoursLeft': media.hours_left,
+            'CreatedAt': media.CreatedAt.isoformat() if media.CreatedAt else None,
+            'UpdatedAt': media.UpdatedAt.isoformat() if media.UpdatedAt else None,
+        }
+        
+        return Response({
+            "media": media_data
+        }, status=status.HTTP_200_OK)
+        
+    except Media.DoesNotExist:
+        return Response({"error": "Media not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

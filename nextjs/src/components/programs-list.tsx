@@ -3,7 +3,7 @@
 import ProgramsHeader from "./programs-header";
 import ProgramsFilter from "./programs-filter";
 import ProgramCard from "./program-card";
-import ProgramsPagination from "./programs-pagination";
+import SharedPagination from "./programs-pagination";
 import { Program, ProgramFilters } from "@/types/programs";
 import Image from "next/image";
 import Link from "next/link";
@@ -234,11 +234,12 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
 
       {/* Pagination */}
       {pagination && pagination.totalPages > 1 && (
-        <ProgramsPagination
+        <SharedPagination
           currentPage={pagination.currentPage}
           totalPages={pagination.totalPages}
           totalItems={pagination.totalItems}
           itemsPerPage={pagination.itemsPerPage}
+          basePath="/programs"
         />
       )}
     </div>
