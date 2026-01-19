@@ -17,7 +17,7 @@ urlpatterns = [
      # path('check_user_exists/<str:email>', views.check_user_exists, name='check_user_exists'),
 
 
-         path('roles/', roles_view),
+    path('roles/', roles_view),
     path('roles/<int:id>/', roles_view),
     path('permissions/', permissions_view),
     path('permissions/<int:id>/', permissions_view),
@@ -35,4 +35,8 @@ urlpatterns = [
     path('integrations/<int:id>/', integrations_view),
     path('audit-log/', audit_log_view),
     path('audit-log/<int:id>/', audit_log_view),
+        
+    # Programs endpoints
+    path('list_programs/', views.list_programs, name='list_programs'),
+    path('get_program/<int:program_id>/', views.get_program, name='get_program'),
 ]

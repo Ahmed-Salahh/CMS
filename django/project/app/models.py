@@ -5,6 +5,7 @@ from django.utils.translation import gettext_lazy as _
 from django_ckeditor_5.fields import CKEditor5Field # type: ignore
 import uuid
 import json
+from django.utils import timezone
 
 # Create your models here.
 
@@ -168,3 +169,76 @@ class AuditLog(models.Model):
     class Meta:
         db_table = 'AuditLog'
         verbose_name_plural = 'Audit Logs'
+
+
+class Program(models.Model):
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('upcoming', 'Upcoming'),
+        ('closed', 'Closed'),
+    ]
+    
+    LANGUAGE_CHOICES = [
+        ('English', 'English'),
+        ('Arabic', 'Arabic'),
+        ('Bilingual', 'Bilingual'),
+    ]
+    
+    LOCATION_CHOICES = [
+        ('On-site (Riyadh)', 'On-site (Riyadh)'),
+        ('On-site (Jeddah)', 'On-site (Jeddah)'),
+        ('On-site (Dammam)', 'On-site (Dammam)'),
+        ('Online', 'Online'),
+        ('Hybrid', 'Hybrid'),
+    ]
+    
+    ProgramID = models.AutoField(primary_key=True)
+    ProgramName = models.CharField(max_length=255)
+    ProgramDescription = models.TextField()
+    ProgramImage = models.URLField(max_length=500, blank=True, null=True)
+    Duration = models.CharField(max_length=100, help_text="e.g., 3 Months, 6 Weeks")
+    Language = models.CharField(max_length=50, choices=LANGUAGE_CHOICES, default='English')
+    Location = models.CharField(max_length=100, choices=LOCATION_CHOICES, default='On-site (Riyadh)')
+    TargetAudience = models.CharField(max_length=100, help_text="e.g., Fresh Graduates, Professionals")
+    Status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open')
+    
+    # Optional fields
+    Requirements = models.TextField(blank=True, null=True, help_text="Program requirements")
+    Benefits = models.TextField(blank=True, null=True, help_text="Program benefits")
+    Curriculum = models.TextField(blank=True, null=True, help_text="Program curriculum")
+    
+    # Date fields
+    StartDate = models.DateField(blank=True, null=True)
+    EndDate = models.DateField(blank=True, null=True)
+    ApplicationDeadline = models.DateTimeField(blank=True, null=True)
+    
+    # Timestamps
+    CreatedAt = models.DateTimeField(auto_now_add=True)
+    UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'Programs_Table'
+        verbose_name_plural = 'Programs'
+        ordering = ['-CreatedAt']
+    
+    def __str__(self):
+        return self.ProgramName
+    
+    @property
+    def days_left(self):
+        """Calculate days left until application deadline"""
+        if self.ApplicationDeadline:
+            delta = self.ApplicationDeadline - timezone.now()
+            return max(0, delta.days)
+        return None
+    
+    @property
+    def hours_left(self):
+        """Calculate hours left until application deadline"""
+        if self.ApplicationDeadline:
+            delta = self.ApplicationDeadline - timezone.now()
+            total_seconds = delta.total_seconds()
+            if total_seconds > 0:
+                return int((total_seconds % 86400) / 3600)
+            return 0
+        return None

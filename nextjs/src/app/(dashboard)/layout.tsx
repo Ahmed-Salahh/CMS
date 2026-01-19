@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -7,14 +7,10 @@ interface DashboardLayoutProps {
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
-    <div className="h-full relative">
-      <SidebarProvider>
-        <AppSidebar />
-        <main className="flex-1">
-          <SidebarTrigger />
-          <div className="px-9">{children}</div>
-        </main>
-      </SidebarProvider>
+    <div className="h-full flex flex-col">
+      <Header />
+      <main className="flex-1">{children}</main>
+      <Footer />
     </div>
   );
 };
