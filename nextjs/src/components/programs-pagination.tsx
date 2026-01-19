@@ -19,20 +19,22 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 
-interface ProgramsPaginationProps {
+interface SharedPaginationProps {
   currentPage: number;
   totalPages: number;
   totalItems: number;
   itemsPerPage: number;
+  basePath?: string;
   onPageChange?: (page: number) => void;
   onItemsPerPageChange?: (itemsPerPage: number) => void;
 }
 
-const ProgramsPagination: React.FC<ProgramsPaginationProps> = ({
+const SharedPagination: React.FC<SharedPaginationProps> = ({
   currentPage,
   totalPages,
   totalItems,
   itemsPerPage,
+  basePath = "/programs",
 }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,7 +47,7 @@ const ProgramsPagination: React.FC<ProgramsPaginationProps> = ({
       params.set("per_page", perPage.toString());
     }
     startTransition(() => {
-      router.push(`/programs?${params.toString()}`);
+      router.push(`${basePath}?${params.toString()}`);
     });
   };
 
@@ -192,4 +194,4 @@ const ProgramsPagination: React.FC<ProgramsPaginationProps> = ({
   );
 };
 
-export default ProgramsPagination;
+export default SharedPagination;
