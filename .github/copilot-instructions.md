@@ -104,15 +104,19 @@ export async function GET(req: Request) {
 
 #### API Conventions
 
-- All views use `@api_view(['GET', 'POST'])` decorator
+- All views use `@api_view()` decorator with appropriate HTTP methods (e.g., `@api_view(['GET'])`, `@api_view(['POST', 'PUT'])`)
 - Include `@csrf_exempt` for external calls (Clerk webhooks)
 - Return `JsonResponse` with `{"success": bool, "data": {...}}` structure
 - CORS enabled for `http://localhost:3000`
 
 #### Database Models
 
+- Use AutoField for primary keys
 - Use UUID primary keys where appropriate
-- JSONField for flexible data storage
+- Use `app/models.py` for core models
+- Use `reports/models.py` for report-related models
+- Follow Django ORM best practices
+- TextField for flexible data storage
 - Timestamps: `created_at`, `updated_at` (auto_now_add/auto_now)
 - Model naming: PascalCase (e.g., `Users`, `Roles`)
 
@@ -154,7 +158,11 @@ Uses **shadcn/ui** components (Radix UI + Tailwind CSS):
 1. Define in `app/models.py`.
 2. Run `python manage.py makemigrations app`
 3. Run `python manage.py migrate`
-4. Register in `admin.py` for admin interface
+4. Register in `app/admin.py` for admin interface
+
+### Creating a Django API Endpoint
+1. Add view in `app/views.py` with `@api_view()` decorator
+2. Map URL in `app/urls.py`
 
 ### Adding a Frontend Page
 
