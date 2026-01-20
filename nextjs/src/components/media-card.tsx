@@ -3,22 +3,9 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { MediaItem } from "@/types/media";
 
-export interface MediaItem {
-  MediaID: string;
-  Title: string;
-  Description: string;
-  Image: string;
-  Type: "news" | "events" | "gallery" | "others";
-  EventStatus?: "upcoming" | "completed" | null;
-  EventDate?: string | null;
-  MediaType?: "image" | "video" | null;
-  Facility?: string | null;
-  DaysLeft?: number | null;
-  HoursLeft?: number | null;
-  CreatedAt?: string;
-  UpdatedAt?: string;
-}
+export type { MediaItem };
 
 interface MediaCardProps {
   media: MediaItem;
