@@ -11,45 +11,6 @@ This is a full-stack application with a **Django REST backend** and **Next.js 16
 - **Database**: SQLite (persisted in Docker volume `sqlite_data_*`)
 - **Auth**: Clerk handles authentication; user email passed to Django for authorization
 
-### Docker Development (Primary)
-
-```bash
-# Build and start both services
-docker compose up --build
-
-# Access apps
-# Frontend: http://localhost:3000
-# Django Admin: http://127.0.0.1:8000/admin (admin / a1Rj74XqK2Kj)
-```
-
-The `entrypoint.sh` script runs migrations and initializes data:
-
-- Creates migrations for `app` and `reports` apps
-- Runs `roles.py` to seed Django groups/permissions
-- Runs `reports.py` to seed report definitions
-- Creates superuser when `CREATE_SUPERUSER=true`
-
-### Local Development (Alternative)
-
-**Django** (from `django/project/`):
-
-```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py makemigrations
-python manage.py migrate
-python roles.py  # First-time setup only
-python manage.py runserver
-```
-
-**Next.js** (from `nextjs/`):
-
-```bash
-npm install
-npm run dev  # Uses Turbopack
-```
-
 ## Project-Specific Conventions
 
 ### Frontend Patterns
@@ -92,7 +53,7 @@ import { currentUser } from "@clerk/nextjs/server";
 export default async function ExamplePage() {
   const user = await currentUser();
   const email = user?.emailAddresses[0]?.emailAddress;
-  
+
   const response = await fetch(`${process.env.API_URL}/app/endpoint/`, {
     headers: {
       'Content-Type': 'application/json',
@@ -100,7 +61,7 @@ export default async function ExamplePage() {
     body: JSON.stringify({ email }),
   });
   const data = await response.json();
-  
+
   return <div>{/* render data */}</div>;
 }
 ```
@@ -122,6 +83,14 @@ export async function GET(req: Request) {
 
 #### Code Organization
 
+**CRITICAL: Component Separation**
+
+- **NEVER put all code in page.tsx** - this is the most important rule
+- **ALWAYS extract components into separate files** - pages should only handle layout and data fetching
+- Break down ANY page that has more than 100 lines into smaller components
+- If you're writing JSX for cards, tables, forms, or any UI element, create a separate component file
+- Page files should be lightweight orchestrators that compose smaller components
+
 **TypeScript Interfaces & Types**
 
 - All interfaces and types go in `nextjs/src/types/` directory
@@ -139,7 +108,6 @@ export async function GET(req: Request) {
 
 **Component Organization**
 
-- **DO NOT put everything in one file** - create separate component files
 - Check `nextjs/src/components/` for existing shared components before creating new ones
 - Break down complex pages into smaller, reusable components
 - Place reusable components in `nextjs/src/components/`
@@ -147,9 +115,12 @@ export async function GET(req: Request) {
 - Follow the single responsibility principle - one component, one purpose
 
 Example structure:
+
 ```
 src/
-  app/(dashboard)/tasks/page.tsx          # Main page component
+  app/(dashboard)/tasks/page.tsx          # Main page component (data fetching + layout only)
+  app/(dashboard)/tasks/task-header.tsx   # Page-specific header component
+  app/(dashboard)/tasks/task-filters.tsx  # Page-specific filters component
   components/
     task-card.tsx                          # Shared component
     task-list.tsx                          # Shared component
@@ -159,6 +130,13 @@ src/
   utils/
     task-helpers.ts                        # Task-related utilities
 ```
+
+**What to Extract from page.tsx:**
+
+- Any custom JSX component (cards, tables, forms, headers, sidebars)
+- Reusable UI patterns (list items, filters, search bars)
+- Complex rendering logic (conditional displays, mappings)
+- Keep in page.tsx: data fetching, auth checks, basic layout structure
 
 ### Backend Patterns
 
@@ -218,16 +196,19 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 #### STRICT EXECUTION RULES
 
 **1. Single Source of Truth**
+
 - The Figma file is the absolute standard - no exceptions
 - Do NOT "improve", "modernize", or "simplify" the design
 - Do NOT change spacing, colors, typography, or alignment
 
 **2. Geometry & Spacing**
+
 - Extract EXACT pixel values for all `padding`, `margin`, `gap`, `width`, `height`, and `border-radius`
 - Maintain the exact visual hierarchy defined by font weights and sizes
 - Use Figma's spacing values directly - do not round or adjust
 
 **3. Colors**
+
 - ALWAYS check [globals.css](../nextjs/src/app/globals.css) for existing color CSS variables first
 - Use Tailwind CSS variables (e.g., `hsl(var(--primary))`, `hsl(var(--secondary))`) when colors match
 - If design color doesn't exist in globals.css, ADD it to the appropriate section:
@@ -237,16 +218,19 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 - Never hardcode hex/rgb values when a CSS variable should be used
 
 **4. Layout Logic**
+
 - Preserve exact layout structure from Figma (e.g., Main Content Column + Sidebar)
 - Use appropriate shadcn/ui components that match design patterns
 - Maintain grid/flex configurations exactly as designed
 
 **5. Zero Hallucination**
+
 - Do not invent elements not visible in the design
 - Do not omit elements that are visible (breadcrumbs, icons, buttons, etc.)
 - Every visual element must have a code counterpart
 
 **6. Images & Assets**
+
 - When Figma design contains images, download them using the asset URLs from `mcp_figma_get_design_context` response
 - Save downloaded images to `nextjs/public/` directory with descriptive names
 - Use relative paths in Next.js components: `/filename.png`
@@ -254,6 +238,7 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 - Use Next.js `<Image>` component with proper width/height attributes
 
 #### Integration Checklist
+
 - [ ] Fetch design context from Figma MCP
 - [ ] Extract all spacing/sizing values
 - [ ] Map colors to globals.css variables (add if missing)
@@ -281,6 +266,7 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 4. Register in `app/admin.py` for admin interface
 
 ### Creating a Django API Endpoint
+
 1. Add view in `app/views.py` with `@api_view()` decorator
 2. Map URL in `app/urls.py`
 
@@ -290,10 +276,3 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 2. Use server components with `await currentUser()` for auth
 3. Fetch data via Next.js API routes if it is not a server component, not direct Django calls
 4. Add route to `proxy.ts` if it needs auth protection
-
-### Debugging Docker Issues
-
-- Check logs: `docker compose logs backend` or `docker compose logs frontend`
-- Django migrations run automatically via `entrypoint.sh` build args
-- SQLite database persists in named volume (survives `docker compose down`)
-- Use `docker compose down -v` to wipe database (WARNING: data loss)

@@ -281,6 +281,78 @@ class Media(models.Model):
         null=True,
         help_text="Event date (for upcoming events countdown)"
     )
+    LongDescription = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Detailed description for event details page"
+    )
+    StartDate = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Event start date"
+    )
+    EndDate = models.DateField(
+        blank=True,
+        null=True,
+        help_text="Event end date"
+    )
+    StartTime = models.TimeField(
+        blank=True,
+        null=True,
+        help_text="Event start time"
+    )
+    EndTime = models.TimeField(
+        blank=True,
+        null=True,
+        help_text="Event end time"
+    )
+    Location = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Event location name"
+    )
+    LocationAddress = models.TextField(
+        blank=True,
+        null=True,
+        help_text="Full event location address"
+    )
+    Speaker = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Event speaker name"
+    )
+    SpeakerImage = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Event speaker image URL"
+    )
+    Languages = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Event languages (e.g., 'Arabic, English')"
+    )
+    Fee = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True,
+        help_text="Event fee"
+    )
+    EventFlyer = models.URLField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="Event flyer PDF URL"
+    )
+    EventFlyerFileName = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Event flyer file name"
+    )
     
     # Gallery-specific fields
     MediaType = models.CharField(

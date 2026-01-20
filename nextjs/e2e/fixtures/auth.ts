@@ -1,4 +1,4 @@
-import { test as base } from '@playwright/test';
+import { test as base, Page } from "@playwright/test";
 
 /**
  * Test fixtures for authentication
@@ -6,29 +6,29 @@ import { test as base } from '@playwright/test';
  */
 
 type AuthFixtures = {
-  authenticatedPage: any;
+  authenticatedPage: Page;
 };
 
 export const test = base.extend<AuthFixtures>({
-  authenticatedPage: async ({ page }, use) => {
+  authenticatedPage: async ({ page }: { page: Page }, use) => {
     // Note: In a real scenario, you would:
     // 1. Sign in with valid Clerk credentials
     // 2. Store the session in browser storage/cookies
     // 3. Reuse the session for subsequent tests
-    
+
     // For now, we'll assume you need to authenticate via Clerk UI
     // You may want to use Clerk's test tokens or mock authentication
-    await page.goto('/sign-in');
-    
+    await page.goto("/sign-in");
+
     // TODO: Add actual authentication logic here
     // Example:
     // await page.getByTestId('email-input').fill('test@example.com');
     // await page.getByTestId('password-input').fill('testpassword');
     // await page.getByTestId('sign-in-button').click();
     // await page.waitForURL('/');
-    
+
     await use(page);
   },
 });
 
-export { expect } from '@playwright/test';
+export { expect } from "@playwright/test";

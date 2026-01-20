@@ -133,18 +133,33 @@ class ProgramAdmin(ModelAdmin):
 
 @admin.register(Media)
 class MediaAdmin(ModelAdmin):
-    list_display = ('MediaID', 'Title', 'Type', 'EventStatus', 'MediaType', 'CreatedAt')
-    search_fields = ('Title', 'Description', 'Facility')
+    list_display = ('MediaID', 'Title', 'Type', 'EventStatus', 'Location', 'Speaker', 'MediaType', 'CreatedAt')
+    search_fields = ('Title', 'Description', 'Facility', 'Location', 'Speaker')
     list_filter = ('Type', 'EventStatus', 'MediaType', 'CreatedAt')
     date_hierarchy = 'CreatedAt'
     ordering = ('-CreatedAt',)
     
     fieldsets = (
         ('Basic Information', {
-            'fields': ('Title', 'Description', 'Image', 'Type')
+            'fields': ('Title', 'Description', 'LongDescription', 'Image', 'Type')
         }),
         ('Event Details (for Events type)', {
-            'fields': ('EventStatus', 'EventDate'),
+            'fields': (
+                'EventStatus', 
+                'EventDate',
+                'StartDate',
+                'EndDate',
+                'StartTime',
+                'EndTime',
+                'Location',
+                'LocationAddress',
+                'Speaker',
+                'SpeakerImage',
+                'Languages',
+                'Fee',
+                'EventFlyer',
+                'EventFlyerFileName',
+            ),
             'classes': ('collapse',)
         }),
         ('Gallery Details (for Gallery type)', {
