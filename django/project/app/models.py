@@ -168,3 +168,65 @@ class AuditLog(models.Model):
     class Meta:
         db_table = 'AuditLog'
         verbose_name_plural = 'Audit Logs'
+
+
+class SuccessStory(models.Model):
+    """Model for success stories from Altamayyuz Academy graduates"""
+    
+    CATEGORY_CHOICES = [
+        ('program', 'Programs'),
+        ('career', 'Career Growth'),
+        ('achievement', 'Achievements'),
+        ('leadership', 'Leadership'),
+        ('other', 'Other'),
+    ]
+    
+    id = models.AutoField(primary_key=True)
+    title = models.CharField(max_length=255, help_text="Story title")
+    description = CKEditor5Field('Description', config_name='extends', help_text="Full story content")
+    author_name = models.CharField(max_length=100, help_text="Graduate name")
+    author_image = models.URLField(max_length=500, blank=True, null=True, help_text="URL to author's photo")
+    story_image = models.URLField(max_length=500, help_text="URL to story featured image")
+    rating = models.DecimalField(
+        max_digits=2, 
+        decimal_places=1, 
+        default=4.5,
+        validators=[MinValueValidator(0.0)],
+        help_text="Rating out of 5.0"
+    )
+    category = models.CharField(
+        max_length=50, 
+        choices=CATEGORY_CHOICES, 
+        default='other',
+        help_text="Story category"
+    )
+    is_featured = models.BooleanField(
+        default=False, 
+        help_text="Mark as featured story (shown prominently)"
+    )
+    is_published = models.BooleanField(
+        default=True,
+        help_text="Publish status"
+    )
+    view_count = models.IntegerField(default=0, help_text="Number of views")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'success_stories'
+        verbose_name = 'Success Story'
+        verbose_name_plural = 'Success Stories'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.title} - {self.author_name}"
+    
+    def clean(self):
+        """Validate that rating is between 0 and 5"""
+        if self.rating < 0 or self.rating > 5:
+            raise ValidationError({'rating': 'Rating must be between 0 and 5.0'})
+    
+    def increment_view_count(self):
+        """Increment view count when story is viewed"""
+        self.view_count += 1
+        self.save(update_fields=['view_count'])

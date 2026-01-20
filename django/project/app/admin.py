@@ -104,5 +104,36 @@ class AuditLogAdmin(ModelAdmin):
 
 admin.site.register(AuditLog, AuditLogAdmin)
 
+
+@admin.register(SuccessStory)
+class SuccessStoryAdmin(ModelAdmin):
+    """Admin configuration for Success Stories"""
+    list_display = ('title', 'author_name', 'category', 'rating', 'is_featured', 'is_published', 'view_count', 'created_at')
+    list_filter = ('category', 'is_featured', 'is_published', 'created_at')
+    search_fields = ('title', 'author_name', 'description')
+    list_editable = ('is_featured', 'is_published')
+    readonly_fields = ('view_count', 'created_at', 'updated_at')
+    ordering = ('-created_at',)
+    
+    fieldsets = (
+        ('Story Information', {
+            'fields': ('title', 'description', 'category', 'rating')
+        }),
+        ('Author Information', {
+            'fields': ('author_name', 'author_image')
+        }),
+        ('Media', {
+            'fields': ('story_image',)
+        }),
+        ('Publishing', {
+            'fields': ('is_featured', 'is_published', 'view_count')
+        }),
+        ('Timestamps', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
 admin.site.site_header = "My Admin Site"
 admin.site.site_title = "Admin Site Title"

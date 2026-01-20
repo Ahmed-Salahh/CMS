@@ -861,3 +861,221 @@ def audit_log_view(request, id=None):
         audit_log = AuditLog.objects.get(AuditLogID=id)
         audit_log.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# Success Stories API Endpoints
+
+@api_view(['GET'])
+def get_success_stories(request):
+    """
+    Get all success stories with filtering and pagination
+    Query parameters:
+    - search: Search in title, author_name, description
+    - category: Filter by category (program, career, achievement, leadership, other)
+    - is_featured: Filter featured stories (true/false)
+    - sort: Sort by (recent, oldest, popular, rating)
+    - page: Page number (default: 1)
+    - page_size: Number of items per page (default: 9)
+    - start_date: Filter by created_at >= start_date (YYYY-MM-DD)
+    - end_date: Filter by created_at <= end_date (YYYY-MM-DD)
+    """
+    try:
+        # Get query parameters
+        search_query = request.GET.get('search', '').strip()
+        category = request.GET.get('category', '')
+        is_featured = request.GET.get('is_featured', '')
+        sort_by = request.GET.get('sort', 'recent')
+        page = int(request.GET.get('page', 1))
+        page_size = int(request.GET.get('page_size', 9))
+        start_date = request.GET.get('start_date', '')
+        end_date = request.GET.get('end_date', '')
+        
+        # Base query - only published stories
+        queryset = SuccessStory.objects.filter(is_published=True)
+        
+        # Apply search filter
+        if search_query:
+            queryset = queryset.filter(
+                Q(title__icontains=search_query) |
+                Q(author_name__icontains=search_query) |
+                Q(description__icontains=search_query)
+            )
+        
+        # Apply category filter
+        if category and category != 'all':
+            queryset = queryset.filter(category=category)
+        
+        # Apply featured filter
+        if is_featured:
+            is_featured_bool = is_featured.lower() == 'true'
+            queryset = queryset.filter(is_featured=is_featured_bool)
+        
+        # Apply date filters
+        if start_date:
+            try:
+                start_datetime = parse_datetime(f"{start_date}T00:00:00")
+                if start_datetime:
+                    queryset = queryset.filter(created_at__gte=start_datetime)
+            except:
+                pass
+        
+        if end_date:
+            try:
+                end_datetime = parse_datetime(f"{end_date}T23:59:59")
+                if end_datetime:
+                    queryset = queryset.filter(created_at__lte=end_datetime)
+            except:
+                pass
+        
+        # Apply sorting
+        if sort_by == 'recent':
+            queryset = queryset.order_by('-created_at')
+        elif sort_by == 'oldest':
+            queryset = queryset.order_by('created_at')
+        elif sort_by == 'popular':
+            queryset = queryset.order_by('-view_count', '-created_at')
+        elif sort_by == 'rating':
+            queryset = queryset.order_by('-rating', '-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')
+        
+        # Get total count before pagination
+        total_count = queryset.count()
+        
+        # Apply pagination
+        start_index = (page - 1) * page_size
+        end_index = start_index + page_size
+        paginated_stories = queryset[start_index:end_index]
+        
+        # Serialize data
+        stories_data = []
+        for story in paginated_stories:
+            stories_data.append({
+                'id': story.id,
+                'title': story.title,
+                'description': story.description,
+                'author_name': story.author_name,
+                'author_image': story.author_image,
+                'story_image': story.story_image,
+                'rating': float(story.rating),
+                'category': story.category,
+                'is_featured': story.is_featured,
+                'view_count': story.view_count,
+                'created_at': story.created_at.isoformat(),
+                'updated_at': story.updated_at.isoformat(),
+            })
+        
+        # Calculate pagination metadata
+        total_pages = (total_count + page_size - 1) // page_size
+        
+        return JsonResponse({
+            'success': True,
+            'data': stories_data,
+            'pagination': {
+                'current_page': page,
+                'page_size': page_size,
+                'total_count': total_count,
+                'total_pages': total_pages,
+                'has_next': page < total_pages,
+                'has_previous': page > 1,
+            }
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f"Failed to fetch success stories: {str(e)}"
+        }, status=500)
+
+
+@api_view(['GET'])
+def get_success_story_detail(request, story_id):
+    """
+    Get detailed information about a specific success story
+    Also increments the view count
+    """
+    try:
+        story = get_object_or_404(SuccessStory, id=story_id, is_published=True)
+        
+        # Increment view count
+        story.increment_view_count()
+        
+        # Serialize data
+        story_data = {
+            'id': story.id,
+            'title': story.title,
+            'description': story.description,
+            'author_name': story.author_name,
+            'author_image': story.author_image,
+            'story_image': story.story_image,
+            'rating': float(story.rating),
+            'category': story.category,
+            'is_featured': story.is_featured,
+            'view_count': story.view_count,
+            'created_at': story.created_at.isoformat(),
+            'updated_at': story.updated_at.isoformat(),
+        }
+        
+        # Get related stories (same category, excluding current story)
+        related_stories = SuccessStory.objects.filter(
+            category=story.category,
+            is_published=True
+        ).exclude(id=story_id).order_by('-created_at')[:3]
+        
+        related_data = []
+        for related in related_stories:
+            related_data.append({
+                'id': related.id,
+                'title': related.title,
+                'author_name': related.author_name,
+                'story_image': related.story_image,
+                "author_image": related.author_image,
+                'rating': float(related.rating),
+                'category': related.category,
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': story_data,
+            'related_stories': related_data
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f"Failed to fetch story details: {str(e)}"
+        }, status=404 if 'not found' in str(e).lower() else 500)
+
+
+@api_view(['GET'])
+def get_success_story_categories(request):
+    """
+    Get all available categories with story counts
+    """
+    try:
+        categories = SuccessStory.objects.filter(
+            is_published=True
+        ).values('category').annotate(
+            count=Count('id')
+        ).order_by('category')
+        
+        category_data = []
+        category_labels = dict(SuccessStory.CATEGORY_CHOICES)
+        
+        for cat in categories:
+            category_data.append({
+                'value': cat['category'],
+                'label': category_labels.get(cat['category'], cat['category']),
+                'count': cat['count']
+            })
+        
+        return JsonResponse({
+            'success': True,
+            'data': category_data
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f"Failed to fetch categories: {str(e)}"
+        }, status=500)
