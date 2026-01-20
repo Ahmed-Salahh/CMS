@@ -35,4 +35,9 @@ urlpatterns = [
     path('integrations/<int:id>/', integrations_view),
     path('audit-log/', audit_log_view),
     path('audit-log/<int:id>/', audit_log_view),
+    
+    # Success Stories Endpoints
+    path('success-stories/', views.get_success_stories, name='get_success_stories'),
+    path('success-stories/<int:story_id>/', views.get_success_story_detail, name='get_success_story_detail'),
+    path('success-stories/categories/', views.get_success_story_categories, name='get_success_story_categories'),
 ]

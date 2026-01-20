@@ -1,4 +1,4 @@
-import { Topbar } from "@/components/about-us/topbar";
+// import { Topbar } from "@/components/about-us/topbar";
 import { HeroSection } from "@/components/about-us/hero-section";
 import { SideNavigation } from "@/components/about-us/side-navigation";
 import { Footer } from "@/components/about-us/footer";
@@ -10,7 +10,7 @@ import { ValuesSection } from "@/components/about-us/values-section";
 import { StatisticsSection } from "@/components/about-us/statistics-section";
 // import { TestimonialSection } from "@/components/about-us/testimonial-section";
 import { FoundingMembersSection } from "@/components/about-us/founding-members-section";
-
+import { Topbar } from "@/components/success-stories/topbar";
 // Image constants
 const imgChatGptImageDec32025053619Pm1 =
   "https://www.figma.com/api/mcp/asset/6a0118dc-32e5-40cc-a0b7-10a583b434a0";
@@ -37,10 +37,7 @@ export default function AboutUsPage() {
     <div className="bg-white relative w-full min-h-screen" data-name="About Us">
       {/* Topbar Navigation */}
       <Topbar
-        logoSrc={imgGroup14454}
-        searchIconSrc={imgSearchIcon}
-        translateIconSrc={imgTranslateIcon}
-        arrowRightSrc={imgArrowRight}
+       
       />
 
       {/* Header Section */}
