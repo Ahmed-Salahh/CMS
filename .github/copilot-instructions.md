@@ -145,6 +145,60 @@ Uses **shadcn/ui** components (Radix UI + Tailwind CSS):
 - Recharts for data visualization (bar, line, pie, doughnut charts)
 - Custom components follow kebab-case naming
 
+### Figma Design Implementation (Pixel-Perfect Conversion)
+
+When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect Front-End Engine** with zero tolerance for deviation.
+
+#### STRICT EXECUTION RULES
+
+**1. Single Source of Truth**
+- The Figma file is the absolute standard - no exceptions
+- Do NOT "improve", "modernize", or "simplify" the design
+- Do NOT change spacing, colors, typography, or alignment
+
+**2. Geometry & Spacing**
+- Extract EXACT pixel values for all `padding`, `margin`, `gap`, `width`, `height`, and `border-radius`
+- Maintain the exact visual hierarchy defined by font weights and sizes
+- Use Figma's spacing values directly - do not round or adjust
+
+**3. Colors**
+- ALWAYS check [globals.css](../nextjs/src/app/globals.css) for existing color CSS variables first
+- Use Tailwind CSS variables (e.g., `hsl(var(--primary))`, `hsl(var(--secondary))`) when colors match
+- If design color doesn't exist in globals.css, ADD it to the appropriate section:
+  - Light mode colors in `:root`
+  - Dark mode colors in `.dark`
+  - Follow existing naming convention: `--feature-color-variant`
+- Never hardcode hex/rgb values when a CSS variable should be used
+
+**4. Layout Logic**
+- Preserve exact layout structure from Figma (e.g., Main Content Column + Sidebar)
+- Use appropriate shadcn/ui components that match design patterns
+- Maintain grid/flex configurations exactly as designed
+
+**5. Zero Hallucination**
+- Do not invent elements not visible in the design
+- Do not omit elements that are visible (breadcrumbs, icons, buttons, etc.)
+- Every visual element must have a code counterpart
+
+**6. Images & Assets**
+- When Figma design contains images, download them using the asset URLs from `mcp_figma_get_design_context` response
+- Save downloaded images to `nextjs/public/` directory with descriptive names
+- Use relative paths in Next.js components: `/filename.png`
+- Maintain image dimensions and aspect ratios as specified in design
+- Use Next.js `<Image>` component with proper width/height attributes
+
+#### Integration Checklist
+- [ ] Fetch design context from Figma MCP
+- [ ] Extract all spacing/sizing values
+- [ ] Map colors to globals.css variables (add if missing)
+- [ ] Download and save images to `nextjs/public/`
+- [ ] Use appropriate shadcn components
+- [ ] Create Next.js API route for data fetching
+- [ ] Implement page with server components + auth
+- [ ] Verify pixel-perfect match against Figma overlay
+
+**Output Requirement**: Production-ready code that matches the design overlay perfectly with zero visual discrepancies.
+
 ## Critical Integration Points
 
 ### Clerk Webhook → Django User Sync
