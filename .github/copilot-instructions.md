@@ -74,12 +74,38 @@ const email = user?.emailAddresses[0]?.emailAddress;
 
 #### Backend Communication
 
-- **Never call Django directly from frontend components**
-- Always proxy through Next.js API routes (`/api/*`) if it is not a server component
+- **PRIORITY: Use Server Components for data fetching** - Server components can directly fetch from Django backend and are the preferred approach
+- **Never call Django directly from client components** - Only server components and API routes should communicate with Django
+- Use Next.js API routes (`/api/*`) only when:
+  - Client-side interactivity is required
+  - Fetching from client components
+  - Handling webhooks or external callbacks
 - API routes read `process.env.API_URL` (set to `http://localhost:8000` or backend container)
 - Pass user email from Clerk to Django in request body/headers for authorization
 
-Example API route pattern:
+Example server component pattern (PREFERRED):
+
+```typescript
+// nextjs/src/app/(dashboard)/example/page.tsx
+import { currentUser } from "@clerk/nextjs/server";
+
+export default async function ExamplePage() {
+  const user = await currentUser();
+  const email = user?.emailAddresses[0]?.emailAddress;
+  
+  const response = await fetch(`${process.env.API_URL}/app/endpoint/`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email }),
+  });
+  const data = await response.json();
+  
+  return <div>{/* render data */}</div>;
+}
+```
+
+Example API route pattern (use only when necessary):
 
 ```typescript
 // nextjs/src/app/api/example/route.ts
@@ -92,6 +118,46 @@ export async function GET(req: Request) {
   });
   return Response.json(await response.json());
 }
+```
+
+#### Code Organization
+
+**TypeScript Interfaces & Types**
+
+- All interfaces and types go in `nextjs/src/types/` directory
+- **ALWAYS check if the interface already exists before creating a new one**
+- Search the types folder for similar interfaces and reuse them
+- Use clear, descriptive names following PascalCase convention (e.g., `User`, `TaskItem`, `ApiResponse`)
+
+**Utility Functions**
+
+- All utility functions go in `nextjs/src/utils/` directory
+- **ALWAYS check if a utility function already exists before creating a new one**
+- Search the utils folder for existing helper functions
+- Create focused, single-purpose utility functions
+- Use clear, descriptive names following camelCase convention (e.g., `formatDate`, `calculateTotal`)
+
+**Component Organization**
+
+- **DO NOT put everything in one file** - create separate component files
+- Check `nextjs/src/components/` for existing shared components before creating new ones
+- Break down complex pages into smaller, reusable components
+- Place reusable components in `nextjs/src/components/`
+- Place page-specific components in the same directory as the page that uses them
+- Follow the single responsibility principle - one component, one purpose
+
+Example structure:
+```
+src/
+  app/(dashboard)/tasks/page.tsx          # Main page component
+  components/
+    task-card.tsx                          # Shared component
+    task-list.tsx                          # Shared component
+    ui/                                    # shadcn/ui components
+  types/
+    task.ts                                # Task-related interfaces
+  utils/
+    task-helpers.ts                        # Task-related utilities
 ```
 
 ### Backend Patterns
