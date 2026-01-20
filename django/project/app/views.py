@@ -1120,6 +1120,20 @@ def list_media(request):
                 'HoursLeft': media.hours_left,
                 'CreatedAt': media.CreatedAt.isoformat() if media.CreatedAt else None,
                 'UpdatedAt': media.UpdatedAt.isoformat() if media.UpdatedAt else None,
+                # Event-specific fields
+                'LongDescription': media.LongDescription,
+                'StartDate': media.StartDate.isoformat() if media.StartDate else None,
+                'EndDate': media.EndDate.isoformat() if media.EndDate else None,
+                'StartTime': media.StartTime.strftime('%H:%M') if media.StartTime else None,
+                'EndTime': media.EndTime.strftime('%H:%M') if media.EndTime else None,
+                'Location': media.Location,
+                'LocationAddress': media.LocationAddress,
+                'Speaker': media.Speaker,
+                'SpeakerImage': media.SpeakerImage,
+                'Languages': media.Languages,
+                'Fee': media.Fee,
+                'EventFlyer': media.EventFlyer,
+                'EventFlyerFileName': media.EventFlyerFileName,
             }
             media_data.append(media_dict)
         
@@ -1138,7 +1152,8 @@ def list_media(request):
 @api_view(['GET'])
 def get_media(request, media_id):
     """
-    Get a single media item by ID
+    Get a single media item by ID with all event-specific fields
+    and related events for event type
     """
     try:
         media = Media.objects.get(MediaID=media_id)
@@ -1157,10 +1172,47 @@ def get_media(request, media_id):
             'HoursLeft': media.hours_left,
             'CreatedAt': media.CreatedAt.isoformat() if media.CreatedAt else None,
             'UpdatedAt': media.UpdatedAt.isoformat() if media.UpdatedAt else None,
+            # Event-specific fields
+            'LongDescription': media.LongDescription,
+            'StartDate': media.StartDate.isoformat() if media.StartDate else None,
+            'EndDate': media.EndDate.isoformat() if media.EndDate else None,
+            'StartTime': media.StartTime.strftime('%H:%M') if media.StartTime else None,
+            'EndTime': media.EndTime.strftime('%H:%M') if media.EndTime else None,
+            'Location': media.Location,
+            'LocationAddress': media.LocationAddress,
+            'Speaker': media.Speaker,
+            'SpeakerImage': media.SpeakerImage,
+            'Languages': media.Languages,
+            'Fee': media.Fee,
+            'EventFlyer': media.EventFlyer,
+            'EventFlyerFileName': media.EventFlyerFileName,
         }
         
+        # Get related events for event type media
+        related_events = []
+        if media.Type == 'events':
+            related_media = Media.objects.filter(
+                Type='events'
+            ).exclude(
+                MediaID=media_id
+            ).order_by('-CreatedAt')[:4]
+            
+            for related in related_media:
+                related_events.append({
+                    'MediaID': str(related.MediaID),
+                    'Title': related.Title,
+                    'Description': related.Description,
+                    'Image': related.Image,
+                    'Type': related.Type,
+                    'EventStatus': related.EventStatus,
+                    'EventDate': related.EventDate.isoformat() if related.EventDate else None,
+                    'DaysLeft': related.days_left,
+                    'HoursLeft': related.hours_left,
+                })
+        
         return Response({
-            "media": media_data
+            "media": media_data,
+            "related_events": related_events
         }, status=status.HTTP_200_OK)
         
     except Media.DoesNotExist:
