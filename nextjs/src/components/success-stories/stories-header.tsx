@@ -100,7 +100,7 @@ export function StoriesHeader({
               Type your question and we'll help you with the right information.
             </p>
           </div>
-          <Button className="w-full bg-white hover:bg-gray-200 text-black">
+          <Button className="w-full bg-white hover:bg-gray-200 text-[#525866] border  shadow-sm">
             Ask a Question
           </Button>
         </div>

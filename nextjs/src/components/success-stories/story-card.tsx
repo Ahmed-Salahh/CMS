@@ -26,7 +26,7 @@ export function StoryCard({
 }: StoryCardProps) {
   return (
     <Link href={`/success-stories/${id}`} className="block">
-      <Card className="flex h-[427px] w-[424px] flex-col overflow-hidden rounded-[12px] border-0 shadow-md transition-shadow hover:shadow-lg cursor-pointer">
+      <Card className="flex h-[427px] w-[424px] flex-col overflow-hidden rounded-[12px] border-0 shadow-md transition-shadow hover:shadow-lg cursor-pointer" data-testid="story-card">
         {/* Image */}
         <div className="relative h-[240px] w-full">
           <Image src={image} alt={title} fill className="object-cover" />
