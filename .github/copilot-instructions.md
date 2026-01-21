@@ -207,15 +207,60 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 - Maintain the exact visual hierarchy defined by font weights and sizes
 - Use Figma's spacing values directly - do not round or adjust
 
-**3. Colors**
+**3. Colors (CRITICAL - UPDATED RULES)**
 
-- ALWAYS check [globals.css](../nextjs/src/app/globals.css) for existing color CSS variables first
-- Use Tailwind CSS variables (e.g., `hsl(var(--primary))`, `hsl(var(--secondary))`) when colors match
-- If design color doesn't exist in globals.css, ADD it to the appropriate section:
-  - Light mode colors in `:root`
-  - Dark mode colors in `.dark`
-  - Follow existing naming convention: `--feature-color-variant`
-- Never hardcode hex/rgb values when a CSS variable should be used
+**MANDATORY COLOR WORKFLOW:**
+
+1. **First, ALWAYS check [globals.css](../nextjs/src/app/globals.css)** for existing CSS color variables
+2. **Extract the exact color from Figma design** (hex, rgb, or hsl)
+3. **Compare Figma color with globals.css colors:**
+   - If an **exact or very close match** exists in globals.css → USE the existing CSS variable
+   - If **no match exists** → ADD the new color to globals.css, then use the variable
+4. **NEVER use custom Tailwind colors or hardcoded hex/rgb values directly in components**
+
+**Adding New Colors to globals.css:**
+
+When the design color doesn't exist in globals.css:
+
+```css
+/* In :root section (light mode) */
+--feature-primary: 220 90% 56%; /* e.g., Blue accent */
+--feature-secondary: 280 65% 60%; /* e.g., Purple accent */
+--surface-elevated: 0 0% 98%; /* e.g., Card background */
+
+/* In .dark section (dark mode) */
+--feature-primary: 220 85% 65%; /* Adjusted for dark mode */
+--feature-secondary: 280 60% 70%; /* Adjusted for dark mode */
+--surface-elevated: 0 0% 12%; /* Adjusted for dark mode */
+```
+
+**Naming Convention:**
+
+- Use descriptive, semantic names: `--chart-primary`, `--status-success`, `--surface-card`
+- Group related colors: `--accent-blue`, `--accent-blue-light`, `--accent-blue-dark`
+- Avoid generic names like `--color1` or `--new-color`
+
+**Example Implementation:**
+
+❌ **WRONG - Using custom Tailwind values:**
+
+```tsx
+<div className="bg-[#3B82F6] text-white">
+  <span className="text-[#8B5CF6]">Hello</span>
+</div>
+```
+
+✅ **CORRECT - Using globals.css variables:**
+
+```tsx
+// After adding to globals.css:
+// --primary: 217 91% 60%;
+// --accent: 258 90% 66%;
+
+<div className="bg-primary text-white">
+  <span className="text-accent">Hello</span>
+</div>
+```
 
 **4. Typography & Fonts**
 
@@ -244,20 +289,22 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 - Save downloaded images to `nextjs/public/` directory with descriptive names
 - Use relative paths in Next.js components: `/filename.png`
 - Maintain image dimensions and aspect ratios as specified in design
-- Use Next.js `<Image>` component with proper width/height attributes
+- Use Next.js <Image> component with proper width/height attributes
 
 #### Integration Checklist
 
 - [ ] Fetch design context from Figma MCP
 - [ ] Extract all spacing/sizing values
-- [ ] Map colors to globals.css variables (add if missing)
+- [ ] **Extract all colors from design and compare with globals.css**
+- [ ] **Add missing colors to globals.css with semantic names**
+- [ ] **Use Tailwind CSS variables (not hardcoded colors) in all components**
 - [ ] Download and save images to `nextjs/public/`
 - [ ] Use appropriate shadcn components
-- [ ] Create Next.js API route for data fetching
+- [ ] Create Next.js API route for data fetching (if needed)
 - [ ] Implement page with server components + auth
 - [ ] Verify pixel-perfect match against Figma overlay
 
-**Output Requirement**: Production-ready code that matches the design overlay perfectly with zero visual discrepancies.
+**Output Requirement**: Production-ready code that matches the design overlay perfectly with zero visual discrepancies and uses globals.css color system consistently.
 
 ## Critical Integration Points
 
