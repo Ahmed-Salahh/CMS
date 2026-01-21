@@ -211,54 +211,90 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 
 **MANDATORY COLOR WORKFLOW:**
 
-1. **First, ALWAYS check [globals.css](../nextjs/src/app/globals.css)** for existing CSS color variables
+1. **First, ALWAYS check [globals.css](../nextjs/src/app/globals.css)** for existing shadcn/ui color variables
 2. **Extract the exact color from Figma design** (hex, rgb, or hsl)
 3. **Compare Figma color with globals.css colors:**
-   - If an **exact or very close match** exists in globals.css → USE the existing CSS variable
-   - If **no match exists** → ADD the new color to globals.css, then use the variable
-4. **NEVER use custom Tailwind colors or hardcoded hex/rgb values directly in components**
+   - If an **exact or very close match** exists in globals.css → USE the existing Tailwind class
+   - If **no match exists** → ADD the new color to globals.css following shadcn naming convention, then use the Tailwind class
+4. **NEVER use custom Tailwind colors (like bg-[#3B82F6]) or hardcoded hex/rgb values directly in components**
+
+**Color Class Usage (shadcn/ui convention):**
+
+- Use semantic Tailwind classes that map to CSS variables: `bg-primary`, `text-foreground`, `bg-background`, `border-border`
+- Common shadcn classes:
+  - `bg-background` / `text-foreground` - Main background and text
+  - `bg-primary` / `text-primary-foreground` - Primary actions
+  - `bg-secondary` / `text-secondary-foreground` - Secondary elements
+  - `bg-muted` / `text-muted-foreground` - Muted/subdued content
+  - `bg-accent` / `text-accent-foreground` - Accent elements
+  - `bg-card` / `text-card-foreground` - Card backgrounds
+  - `bg-popover` / `text-popover-foreground` - Popover/dropdown backgrounds
+  - `border-border` - Border colors
+  - `bg-destructive` / `text-destructive-foreground` - Destructive actions
+- For opacity: `bg-primary/80` or `text-muted-foreground/50`
 
 **Adding New Colors to globals.css:**
 
-When the design color doesn't exist in globals.css:
+When the design color doesn't exist in globals.css, follow shadcn naming convention:
 
 ```css
 /* In :root section (light mode) */
---feature-primary: 220 90% 56%; /* e.g., Blue accent */
---feature-secondary: 280 65% 60%; /* e.g., Purple accent */
---surface-elevated: 0 0% 98%; /* e.g., Card background */
+--chart-1: 220 90% 56%; /* Chart colors */
+--chart-2: 280 65% 60%;
+--success: 142 76% 36%; /* Status colors */
+--warning: 38 92% 50%;
+--info: 199 89% 48%;
 
 /* In .dark section (dark mode) */
---feature-primary: 220 85% 65%; /* Adjusted for dark mode */
---feature-secondary: 280 60% 70%; /* Adjusted for dark mode */
---surface-elevated: 0 0% 12%; /* Adjusted for dark mode */
+--chart-1: 220 85% 65%;
+--chart-2: 280 60% 70%;
+--success: 142 71% 45%;
+--warning: 38 87% 60%;
+--info: 199 89% 58%;
 ```
 
-**Naming Convention:**
+**Naming Convention (shadcn/ui style):**
 
-- Use descriptive, semantic names: `--chart-primary`, `--status-success`, `--surface-card`
-- Group related colors: `--accent-blue`, `--accent-blue-light`, `--accent-blue-dark`
+- Use semantic names that describe purpose: `--chart-1`, `--success`, `--warning`, `--info`
+- For custom colors, follow pattern: `--feature-name` (e.g., `--sidebar`, `--highlight`)
 - Avoid generic names like `--color1` or `--new-color`
+- Ensure each color has both light and dark mode values
+
+**Then use with Tailwind:**
+
+```tsx
+// After adding to globals.css
+// --chart-1: 220 90% 56%;
+
+<div className="bg-chart-1 text-white">
+  <span className="text-success">Success message</span>
+</div>
+```
 
 **Example Implementation:**
 
-❌ **WRONG - Using custom Tailwind values:**
+❌ **WRONG - Using custom Tailwind values or CSS variable syntax:**
 
 ```tsx
 <div className="bg-[#3B82F6] text-white">
   <span className="text-[#8B5CF6]">Hello</span>
 </div>
+
+<div className="bg-[hsl(var(--primary))] text-white">
+  <span>Also wrong syntax</span>
+</div>
 ```
 
-✅ **CORRECT - Using globals.css variables:**
+✅ **CORRECT - Using shadcn Tailwind classes:**
 
 ```tsx
-// After adding to globals.css:
-// --primary: 217 91% 60%;
-// --accent: 258 90% 66%;
+<div className="bg-primary text-primary-foreground">
+  <span className="text-muted-foreground">Hello</span>
+</div>
 
-<div className="bg-primary text-white">
-  <span className="text-accent">Hello</span>
+<div className="bg-card border border-border">
+  <h2 className="text-foreground">Card Title</h2>
+  <p className="text-muted-foreground">Card description</p>
 </div>
 ```
 
@@ -297,7 +333,7 @@ When the design color doesn't exist in globals.css:
 - [ ] Extract all spacing/sizing values
 - [ ] **Extract all colors from design and compare with globals.css**
 - [ ] **Add missing colors to globals.css with semantic names**
-- [ ] **Use Tailwind CSS variables (not hardcoded colors) in all components**
+- [ ] **Use CSS variables (not hardcoded colors) in all components**
 - [ ] Download and save images to `nextjs/public/`
 - [ ] Use appropriate shadcn components
 - [ ] Create Next.js API route for data fetching (if needed)
