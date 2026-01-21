@@ -230,3 +230,39 @@ class SuccessStory(models.Model):
         """Increment view count when story is viewed"""
         self.view_count += 1
         self.save(update_fields=['view_count'])
+
+
+class Contact(models.Model):
+    """Contact form submission model"""
+    TYPE_CHOICES = [
+        ('complaint', 'Complaint'),
+        ('cooperation', 'Cooperation'),
+        ('inquiry', 'General Inquiry'),
+    ]
+    
+    id = models.AutoField(primary_key=True)
+    type_of_interest = models.CharField(
+        max_length=50,
+        choices=TYPE_CHOICES,
+        default='complaint',
+        help_text="Type of contact inquiry"
+    )
+    name = models.CharField(max_length=255, help_text="Contact person name")
+    email = models.EmailField(max_length=254, help_text="Contact email address")
+    phone_number = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        help_text="Optional phone number"
+    )
+    message = models.TextField(help_text="Contact message")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        db_table = 'contacts'
+        verbose_name = 'Contact Submission'
+        verbose_name_plural = 'Contact Submissions'
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"{self.name} - {self.type_of_interest} ({self.created_at.strftime('%Y-%m-%d')})"

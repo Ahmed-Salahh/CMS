@@ -135,5 +135,26 @@ class SuccessStoryAdmin(ModelAdmin):
     )
 
 
+@admin.register(Contact)
+class ContactAdmin(ModelAdmin):
+    list_display = ('name', 'email', 'type_of_interest', 'created_at')
+    list_filter = ('type_of_interest', 'created_at')
+    search_fields = ('name', 'email', 'message')
+    readonly_fields = ('created_at',)
+    
+    fieldsets = (
+        ('Contact Information', {
+            'fields': ('type_of_interest', 'name', 'email', 'phone_number')
+        }),
+        ('Message', {
+            'fields': ('message',)
+        }),
+        ('Timestamp', {
+            'fields': ('created_at',),
+            'classes': ('collapse',)
+        }),
+    )
+
+
 admin.site.site_header = "My Admin Site"
 admin.site.site_title = "Admin Site Title"

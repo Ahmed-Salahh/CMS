@@ -1079,3 +1079,56 @@ def get_success_story_categories(request):
             'success': False,
             'error': f"Failed to fetch categories: {str(e)}"
         }, status=500)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def create_contact(request):
+    """
+    Create a new contact form submission
+    POST /app/contact/
+    """
+    try:
+        data = json.loads(request.body)
+        
+        # Validate required fields
+        required_fields = ['type_of_interest', 'name', 'email', 'message']
+        for field in required_fields:
+            if field not in data or not data[field]:
+                return JsonResponse({
+                    'success': False,
+                    'error': f'Missing required field: {field}'
+                }, status=400)
+        
+        # Create contact submission
+        contact = Contact.objects.create(
+            type_of_interest=data['type_of_interest'],
+            name=data['name'],
+            email=data['email'],
+            phone_number=data.get('phone_number', ''),
+            message=data['message']
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'data': {
+                'id': contact.id,
+                'message': 'Contact submission received successfully'
+            }
+        }, status=201)
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'error': 'Invalid JSON data'
+        }, status=400)
+    except ValidationError as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': f"Failed to create contact: {str(e)}"
+        }, status=500)

@@ -9,8 +9,33 @@ body,
 }
 
 body {
-  font-family: var(--font-dm-serif-text), serif;
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
   letter-spacing: 0%;
+}
+
+/* Apply Montserrat to ALL elements including form inputs, buttons, selects */
+* {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
+}
+
+/* Explicitly apply to form elements that don't inherit by default */
+input,
+textarea,
+select,
+button,
+option,
+optgroup {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif !important;
+}
+
+/* Apply to placeholder text */
+::placeholder {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif !important;
+}
+
+/* Apply to all shadcn/ui components */
+[class*="ui-"] {
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
 }
 
 @layer base {

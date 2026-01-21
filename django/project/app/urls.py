@@ -40,4 +40,7 @@ urlpatterns = [
     path('success-stories/', views.get_success_stories, name='get_success_stories'),
     path('success-stories/<int:story_id>/', views.get_success_story_detail, name='get_success_story_detail'),
     path('success-stories/categories/', views.get_success_story_categories, name='get_success_story_categories'),
+    
+    # Contact Endpoints
+    path('contact/', views.create_contact, name='create_contact'),
 ]
