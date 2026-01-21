@@ -217,19 +217,28 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
   - Follow existing naming convention: `--feature-color-variant`
 - Never hardcode hex/rgb values when a CSS variable should be used
 
-**4. Layout Logic**
+**4. Typography & Fonts**
+
+- ALWAYS check [globals.css](../nextjs/src/app/globals.css) for existing font imports and definitions first
+- Check [layout.tsx](../nextjs/src/app/layout.tsx) for existing font configurations
+- If design font doesn't exist:
+  - Import the font using Next.js font optimization (`next/font/google` or `next/font/local`)
+  - Add it to the layout.tsx file
+- Preserve exact font weights, sizes, line heights, and letter spacing from Figma
+
+**5. Layout Logic**
 
 - Preserve exact layout structure from Figma (e.g., Main Content Column + Sidebar)
 - Use appropriate shadcn/ui components that match design patterns
 - Maintain grid/flex configurations exactly as designed
 
-**5. Zero Hallucination**
+**6. Zero Hallucination**
 
 - Do not invent elements not visible in the design
 - Do not omit elements that are visible (breadcrumbs, icons, buttons, etc.)
 - Every visual element must have a code counterpart
 
-**6. Images & Assets**
+**7. Images & Assets**
 
 - When Figma design contains images, download them using the asset URLs from `mcp_figma_get_design_context` response
 - Save downloaded images to `nextjs/public/` directory with descriptive names
@@ -276,3 +285,9 @@ When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect F
 2. Use server components with `await currentUser()` for auth
 3. Fetch data via Next.js API routes if it is not a server component, not direct Django calls
 4. Add route to `proxy.ts` if it needs auth protection
+5. **Test the page using Playwright MCP server:**
+   - Use the Playwright MCP tools to navigate to the new page
+   - Interact with and test the page functionality
+   - Generate a Playwright test file in `nextjs/e2e/` directory based on the interactions
+   - Follow existing test patterns in the e2e folder
+   - Ensure tests cover key user interactions and page functionality
