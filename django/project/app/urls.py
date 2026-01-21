@@ -44,4 +44,10 @@ urlpatterns = [
     path('list_media/', views.list_media, name='list_media'),
     path('get_media/<int:media_id>/', views.get_media, name='get_media'),
     path('get_news_article/<int:news_id>/', views.get_news_article, name='get_news_article'),
+    
+    # FAQ endpoints
+    path('faqs/', views.get_all_faqs, name='get_all_faqs'),
+    path('faqs/search/', views.search_faqs, name='search_faqs'),
+    path('faqs/category/<str:category_slug>/', views.get_faq_category, name='get_faq_category'),
+    path('faqs/<int:faq_id>/helpful/', views.mark_faq_helpful, name='mark_faq_helpful'),
 ]

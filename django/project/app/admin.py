@@ -167,3 +167,21 @@ class MediaAdmin(ModelAdmin):
             'classes': ('collapse',)
         }),
     )
+
+
+@admin.register(FAQCategory)
+class FAQCategoryAdmin(ModelAdmin):
+    list_display = ('CategoryID', 'Name', 'Slug', 'Order', 'IsActive', 'CreatedAt')
+    search_fields = ('Name', 'Description')
+    list_filter = ('IsActive',)
+    prepopulated_fields = {'Slug': ('Name',)}
+    ordering = ('Order', 'Name')
+
+
+@admin.register(FAQ)
+class FAQAdmin(ModelAdmin):
+    list_display = ('FAQID', 'Question', 'Category', 'Order', 'IsActive', 'HelpfulCount', 'NotHelpfulCount', 'CreatedAt')
+    search_fields = ('Question', 'Answer')
+    list_filter = ('Category', 'IsActive')
+    ordering = ('Category', 'Order')
+    raw_id_fields = ('Category',)

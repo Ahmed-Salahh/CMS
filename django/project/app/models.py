@@ -10,6 +10,54 @@ from django.utils import timezone
 # Create your models here.
 
 
+class FAQCategory(models.Model):
+    """Model for FAQ categories/sections"""
+    CategoryID = models.AutoField(primary_key=True)
+    Name = models.CharField(max_length=255)
+    Slug = models.SlugField(max_length=255, unique=True)
+    Description = models.TextField(blank=True, null=True)
+    Icon = models.CharField(max_length=100, blank=True, null=True, help_text="Icon name or class")
+    Order = models.IntegerField(default=0, help_text="Display order")
+    IsActive = models.BooleanField(default=True)
+    CreatedAt = models.DateTimeField(auto_now_add=True)
+    UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'FAQCategories'
+        verbose_name_plural = 'FAQ Categories'
+        ordering = ['Order', 'Name']
+    
+    def __str__(self):
+        return self.Name
+
+
+class FAQ(models.Model):
+    """Model for individual FAQ items"""
+    FAQID = models.AutoField(primary_key=True)
+    Category = models.ForeignKey(
+        FAQCategory, 
+        on_delete=models.CASCADE, 
+        related_name='faqs',
+        db_column='CategoryID'
+    )
+    Question = models.CharField(max_length=500)
+    Answer = models.TextField()
+    Order = models.IntegerField(default=0, help_text="Display order within category")
+    IsActive = models.BooleanField(default=True)
+    HelpfulCount = models.IntegerField(default=0)
+    NotHelpfulCount = models.IntegerField(default=0)
+    CreatedAt = models.DateTimeField(auto_now_add=True)
+    UpdatedAt = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        db_table = 'FAQs'
+        verbose_name_plural = 'FAQs'
+        ordering = ['Order', 'Question']
+    
+    def __str__(self):
+        return f"{self.Question[:50]}..."
+
+
 class WorkflowInstance(models.Model):
     WORKFLOW_STATES = [
         ('started', 'Started'),

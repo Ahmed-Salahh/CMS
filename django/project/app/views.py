@@ -1267,3 +1267,209 @@ def get_news_article(request, news_id):
         return Response({"error": "News article not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============================================================
+# FAQ API Endpoints
+# ============================================================
+
+@api_view(['GET'])
+def get_all_faqs(request):
+    """
+    Get all FAQ categories with their FAQs
+    """
+    try:
+        categories = FAQCategory.objects.filter(IsActive=True).prefetch_related(
+            Prefetch(
+                'faqs',
+                queryset=FAQ.objects.filter(IsActive=True).order_by('Order')
+            )
+        ).order_by('Order')
+        
+        data = []
+        for category in categories:
+            category_data = {
+                'id': category.CategoryID,
+                'name': category.Name,
+                'slug': category.Slug,
+                'description': category.Description,
+                'icon': category.Icon,
+                'order': category.Order,
+                'is_active': category.IsActive,
+                'created_at': category.CreatedAt.isoformat() if category.CreatedAt else None,
+                'updated_at': category.UpdatedAt.isoformat() if category.UpdatedAt else None,
+                'faqs': []
+            }
+            
+            for faq in category.faqs.all():
+                category_data['faqs'].append({
+                    'id': faq.FAQID,
+                    'question': faq.Question,
+                    'answer': faq.Answer,
+                    'category_id': category.CategoryID,
+                    'order': faq.Order,
+                    'is_active': faq.IsActive,
+                    'helpful_count': faq.HelpfulCount,
+                    'not_helpful_count': faq.NotHelpfulCount,
+                    'created_at': faq.CreatedAt.isoformat() if faq.CreatedAt else None,
+                    'updated_at': faq.UpdatedAt.isoformat() if faq.UpdatedAt else None,
+                })
+            
+            data.append(category_data)
+        
+        return Response({
+            "success": True,
+            "data": data
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            "success": False,
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_faq_category(request, category_slug):
+    """
+    Get a single FAQ category by slug with its FAQs
+    """
+    try:
+        category = FAQCategory.objects.prefetch_related(
+            Prefetch(
+                'faqs',
+                queryset=FAQ.objects.filter(IsActive=True).order_by('Order')
+            )
+        ).get(Slug=category_slug, IsActive=True)
+        
+        category_data = {
+            'id': category.CategoryID,
+            'name': category.Name,
+            'slug': category.Slug,
+            'description': category.Description,
+            'icon': category.Icon,
+            'order': category.Order,
+            'is_active': category.IsActive,
+            'created_at': category.CreatedAt.isoformat() if category.CreatedAt else None,
+            'updated_at': category.UpdatedAt.isoformat() if category.UpdatedAt else None,
+            'faqs': []
+        }
+        
+        for faq in category.faqs.all():
+            category_data['faqs'].append({
+                'id': faq.FAQID,
+                'question': faq.Question,
+                'answer': faq.Answer,
+                'category_id': category.CategoryID,
+                'order': faq.Order,
+                'is_active': faq.IsActive,
+                'helpful_count': faq.HelpfulCount,
+                'not_helpful_count': faq.NotHelpfulCount,
+                'created_at': faq.CreatedAt.isoformat() if faq.CreatedAt else None,
+                'updated_at': faq.UpdatedAt.isoformat() if faq.UpdatedAt else None,
+            })
+        
+        return Response({
+            "success": True,
+            "data": category_data
+        }, status=status.HTTP_200_OK)
+        
+    except FAQCategory.DoesNotExist:
+        return Response({
+            "success": False,
+            "error": "FAQ category not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({
+            "success": False,
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['POST'])
+@csrf_exempt
+def mark_faq_helpful(request, faq_id):
+    """
+    Mark an FAQ as helpful or not helpful
+    """
+    try:
+        data = json.loads(request.body)
+        is_helpful = data.get('is_helpful', True)
+        
+        faq = FAQ.objects.get(FAQID=faq_id, IsActive=True)
+        
+        if is_helpful:
+            faq.HelpfulCount += 1
+        else:
+            faq.NotHelpfulCount += 1
+        
+        faq.save()
+        
+        return Response({
+            "success": True,
+            "data": {
+                'id': faq.FAQID,
+                'helpful_count': faq.HelpfulCount,
+                'not_helpful_count': faq.NotHelpfulCount,
+            }
+        }, status=status.HTTP_200_OK)
+        
+    except FAQ.DoesNotExist:
+        return Response({
+            "success": False,
+            "error": "FAQ not found"
+        }, status=status.HTTP_404_NOT_FOUND)
+    except json.JSONDecodeError:
+        return Response({
+            "success": False,
+            "error": "Invalid JSON"
+        }, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({
+            "success": False,
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def search_faqs(request):
+    """
+    Search FAQs by query string
+    """
+    try:
+        query = request.GET.get('q', '').strip()
+        
+        if not query:
+            return Response({
+                "success": True,
+                "data": []
+            }, status=status.HTTP_200_OK)
+        
+        faqs = FAQ.objects.filter(
+            Q(Question__icontains=query) | Q(Answer__icontains=query),
+            IsActive=True
+        ).select_related('Category').order_by('Order')[:20]
+        
+        data = []
+        for faq in faqs:
+            data.append({
+                'id': faq.FAQID,
+                'question': faq.Question,
+                'answer': faq.Answer,
+                'category_id': faq.Category.CategoryID,
+                'category_name': faq.Category.Name,
+                'category_slug': faq.Category.Slug,
+                'order': faq.Order,
+                'is_active': faq.IsActive,
+            })
+        
+        return Response({
+            "success": True,
+            "data": data
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            "success": False,
+            "error": str(e)
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
