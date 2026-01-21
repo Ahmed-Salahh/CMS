@@ -1219,3 +1219,51 @@ def get_media(request, media_id):
         return Response({"error": "Media not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+def get_news_article(request, news_id):
+    """
+    Get a single news article by ID with related news articles
+    """
+    try:
+        news = Media.objects.get(MediaID=news_id, Type='news')
+        
+        news_data = {
+            'MediaID': str(news.MediaID),
+            'Title': news.Title,
+            'Description': news.Description,
+            'LongDescription': news.LongDescription,
+            'Image': news.Image,
+            'Type': news.Type,
+            'CreatedAt': news.CreatedAt.isoformat() if news.CreatedAt else None,
+            'UpdatedAt': news.UpdatedAt.isoformat() if news.UpdatedAt else None,
+        }
+        
+        # Get related news articles
+        related_news = []
+        related_media = Media.objects.filter(
+            Type='news'
+        ).exclude(
+            MediaID=news_id
+        ).order_by('-CreatedAt')[:4]
+        
+        for related in related_media:
+            related_news.append({
+                'MediaID': str(related.MediaID),
+                'Title': related.Title,
+                'Description': related.Description,
+                'Image': related.Image,
+                'Type': related.Type,
+                'CreatedAt': related.CreatedAt.isoformat() if related.CreatedAt else None,
+            })
+        
+        return Response({
+            "news": news_data,
+            "related_news": related_news
+        }, status=status.HTTP_200_OK)
+        
+    except Media.DoesNotExist:
+        return Response({"error": "News article not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
