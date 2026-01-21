@@ -153,15 +153,21 @@ export default async function MediaPage({ searchParams }: PageProps) {
             ) : (
               <>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {media.map((item: MediaItem) => (
-                    <Link
-                      key={item.MediaID}
-                      className="w-full"
-                      href={`/media/${item.MediaID}`}
-                    >
-                      <MediaCard media={item} />
-                    </Link>
-                  ))}
+                  {media.map((item: MediaItem) => {
+                    const href = item.Type === "news" 
+                      ? `/media/news/${item.MediaID}`
+                      : `/media/${item.MediaID}`;
+                    
+                    return (
+                      <Link
+                        key={item.MediaID}
+                        className="w-full"
+                        href={href}
+                      >
+                        <MediaCard media={item} />
+                      </Link>
+                    );
+                  })}
                 </div>
 
                 {/* Pagination */}

@@ -40,3 +40,8 @@ export interface SingleMediaResponse {
   media: MediaItem;
   related_events?: MediaItem[];
 }
+
+export interface NewsArticleResponse {
+  news: MediaItem;
+  related_news: MediaItem[];
+}

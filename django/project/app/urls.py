@@ -43,4 +43,5 @@ urlpatterns = [
     # Media endpoints
     path('list_media/', views.list_media, name='list_media'),
     path('get_media/<int:media_id>/', views.get_media, name='get_media'),
+    path('get_news_article/<int:news_id>/', views.get_news_article, name='get_news_article'),
 ]
