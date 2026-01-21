@@ -1,4 +1,4 @@
-# Copilot Instructions for Full-Stack Application
+# Copilot Instructions - Full-Stack Application
 
 ## Architecture Overview
 
@@ -11,223 +11,91 @@ This is a full-stack application with a **Django REST backend** and **Next.js 16
 - **Database**: SQLite (persisted in Docker volume `sqlite_data_*`)
 - **Auth**: Clerk handles authentication; user email passed to Django for authorization
 
-### Docker Development (Primary)
+### Technology Stack
 
-```bash
-# Build and start both services
-docker compose up --build
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui components
+- **Backend**: Django 5.1, Django REST Framework, django-unfold admin
+- **Database**: SQLite with volume persistence
+- **Auth**: Clerk (authentication) + Django (authorization)
+- **Containers**: Docker Compose with shared network
 
-# Access apps
-# Frontend: http://localhost:3000
-# Django Admin: http://127.0.0.1:8000/admin (admin / a1Rj74XqK2Kj)
-```
+## File Organization
 
-The `entrypoint.sh` script runs migrations and initializes data:
+Detailed implementation rules are split across specialized files:
 
-- Creates migrations for `app` and `reports` apps
-- Runs `roles.py` to seed Django groups/permissions
-- Runs `reports.py` to seed report definitions
-- Creates superuser when `CREATE_SUPERUSER=true`
+- **[copilot-frontend.md](./copilot-frontend.md)**: Next.js patterns, routing, authentication, component organization
+- **[copilot-backend.md](./copilot-backend.md)**: Django models, views, API conventions, database patterns
+- **[copilot-figma.md](./copilot-figma.md)**: Pixel-perfect Figma design implementation rules
+- **[copilot-testing.md](./copilot-testing.md)**: Playwright testing with MCP server integration
 
-### Local Development (Alternative)
+## Critical Integration Points
 
-**Django** (from `django/project/`):
+### Authentication Flow
 
-```bash
-python -m venv venv
-venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py makemigrations
-python manage.py migrate
-python roles.py  # First-time setup only
-python manage.py runserver
-```
+1. Clerk handles user authentication in frontend
+2. User email extracted via `currentUser()` from Clerk
+3. Email passed to Django backend for authorization
+4. Webhook syncs Clerk user events to Django (`/api/webhooks/route.ts` → `/app/userCreated`)
 
-**Next.js** (from `nextjs/`):
+### Frontend ↔ Backend Communication
 
-```bash
-npm install
-npm run dev  # Uses Turbopack
-```
+- **PRIORITY**: Use Next.js Server Components for data fetching
+- Server components directly fetch from Django backend at `process.env.API_URL`
+- Use API routes (`/api/*`) only when client-side interactivity is required
+- Never call Django directly from client components
 
-## Project-Specific Conventions
+### Environment Configuration
 
-### Frontend Patterns
+**Frontend** ([nextjs/.env.local](../nextjs/.env.local)):
 
-#### Route Organization
-
-- **(auth)**: Clerk authentication pages (sign-in, sign-up) with centered layout
-- **(dashboard)**: Authenticated routes with custom dashboard layout
-- Use Next.js **App Router file conventions**: `layout.tsx`, `page.tsx`, `route.ts`
-
-#### Authentication Flow
-
-```typescript
-// API routes: Use currentUser() for server-side auth
-import { currentUser } from "@clerk/nextjs/server";
-const user = await currentUser();
-const email = user?.emailAddresses[0]?.emailAddress;
-
-// Middleware: Protected routes via Clerk middleware (src/proxy.ts)
-// Public routes: /sign-in, /sign-up, /api/webhooks
-```
-
-#### Backend Communication
-
-- **Never call Django directly from frontend components**
-- Always proxy through Next.js API routes (`/api/*`) if it is not a server component
-- API routes read `process.env.API_URL` (set to `http://localhost:8000` or backend container)
-- Pass user email from Clerk to Django in request body/headers for authorization
-
-Example API route pattern:
-
-```typescript
-// nextjs/src/app/api/example/route.ts
-export async function GET(req: Request) {
-  const user = await currentUser();
-  const response = await fetch(`${process.env.API_URL}/app/endpoint/`, {
-    headers: {
-      /* user email */
-    },
-  });
-  return Response.json(await response.json());
-}
-```
-
-### Backend Patterns
-
-#### Django App Structure
-
-- `app/`: Core application models, views and API endpoints
-- `reports/`: Reporting functionality with SQL-based chart definitions
-- `project/`: Django settings, URLs, WSGI config
-
-#### API Conventions
-
-- All views use `@api_view()` decorator with appropriate HTTP methods (e.g., `@api_view(['GET'])`, `@api_view(['POST', 'PUT'])`)
-- Include `@csrf_exempt` for external calls (Clerk webhooks)
-- Return `JsonResponse` with `{"success": bool, "data": {...}}` structure
-- CORS enabled for `http://localhost:3000`
-
-#### Database Models
-
-- Use AutoField for primary keys
-- Use UUID primary keys where appropriate
-- Use `app/models.py` for core models
-- Use `reports/models.py` for report-related models
-- Follow Django ORM best practices
-- TextField for flexible data storage
-- Timestamps: `created_at`, `updated_at` (auto_now_add/auto_now)
-- Model naming: PascalCase (e.g., `Users`, `Roles`)
-
-### Configuration Files
-
-**Environment Variables** ([nextjs/.env.local](../nextjs/.env.local)):
-
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY`: Clerk auth
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY`
 - `API_URL`: Django backend URL (http://localhost:8000)
 - `NEXT_PUBLIC_NEXTJS_API_URL`: Frontend URL for webhooks
 - `SIGNING_SECRET`: Clerk webhook verification
 
-**Django Settings** ([django/project/project/settings.py](../django/project/project/settings.py)):
+**Backend** ([django/project/project/settings.py](../django/project/project/settings.py)):
 
-- Uses `django-unfold` for modern admin UI
 - `CSRF_TRUSTED_ORIGINS`: Must include frontend URL
-- SQLite database at `BASE_DIR/database/db.sqlite3`
-- Static files served by WhiteNoise with compressed manifest storage
+- CORS enabled for `http://localhost:3000`
+- SQLite at `BASE_DIR/database/db.sqlite3`
 
-### UI Component Library
+## Quick Reference
 
-Uses **shadcn/ui** components (Radix UI + Tailwind CSS):
+### Adding a New Feature
 
-- Components in `nextjs/src/components/ui/`
-- Configure via [components.json](../nextjs/components.json)
-- Recharts for data visualization (bar, line, pie, doughnut charts)
-- Custom components follow kebab-case naming
+1. **Backend**: Create Django model → migrate → add API endpoint → update URLs
+2. **Frontend**: Create page in `app/(dashboard)/[route]/` → extract components → add types → test with Playwright
+3. **Integration**: Use server components for data fetching → pass user email for auth
 
-### Figma Design Implementation (Pixel-Perfect Conversion)
+### Project Structure
 
-When implementing designs from Figma using MCP tools, act as a **Pixel-Perfect Front-End Engine** with zero tolerance for deviation.
+```
+nextjs/
+  src/
+    app/
+      (auth)/           ← Clerk sign-in/sign-up pages
+      (dashboard)/      ← Protected routes with dashboard layout
+      api/              ← API routes (webhooks, client-side endpoints)
+    components/         ← Shared components
+      ui/               ← shadcn/ui components
+    types/              ← TypeScript interfaces
+    utils/              ← Utility functions
+  e2e/                  ← Playwright tests
 
-#### STRICT EXECUTION RULES
+django/
+  project/
+    app/                ← Core application (models, views, APIs)
+    reports/            ← Reporting functionality
+    project/            ← Settings, URLs, WSGI config
+    database/           ← SQLite database file
+```
 
-**1. Single Source of Truth**
-- The Figma file is the absolute standard - no exceptions
-- Do NOT "improve", "modernize", or "simplify" the design
-- Do NOT change spacing, colors, typography, or alignment
+## Development Workflow
 
-**2. Geometry & Spacing**
-- Extract EXACT pixel values for all `padding`, `margin`, `gap`, `width`, `height`, and `border-radius`
-- Maintain the exact visual hierarchy defined by font weights and sizes
-- Use Figma's spacing values directly - do not round or adjust
+1. Check existing code before creating new files (types, utils, components)
+2. Follow file organization conventions (see frontend/backend docs)
+3. Use TypeScript strictly (no `any` types)
+4. Test new pages with Playwright MCP server
+5. Maintain pixel-perfect design fidelity (see Figma docs)
 
-**3. Colors**
-- ALWAYS check [globals.css](../nextjs/src/app/globals.css) for existing color CSS variables first
-- Use Tailwind CSS variables (e.g., `hsl(var(--primary))`, `hsl(var(--secondary))`) when colors match
-- If design color doesn't exist in globals.css, ADD it to the appropriate section:
-  - Light mode colors in `:root`
-  - Dark mode colors in `.dark`
-  - Follow existing naming convention: `--feature-color-variant`
-- Never hardcode hex/rgb values when a CSS variable should be used
-
-**4. Layout Logic**
-- Preserve exact layout structure from Figma (e.g., Main Content Column + Sidebar)
-- Use appropriate shadcn/ui components that match design patterns
-- Maintain grid/flex configurations exactly as designed
-
-**5. Zero Hallucination**
-- Do not invent elements not visible in the design
-- Do not omit elements that are visible (breadcrumbs, icons, buttons, etc.)
-- Every visual element must have a code counterpart
-
-**6. Images & Assets**
-- When Figma design contains images, download them using the asset URLs from `mcp_figma_get_design_context` response
-- Save downloaded images to `nextjs/public/` directory with descriptive names
-- Use relative paths in Next.js components: `/filename.png`
-- Maintain image dimensions and aspect ratios as specified in design
-- Use Next.js `<Image>` component with proper width/height attributes
-
-#### Integration Checklist
-- [ ] Fetch design context from Figma MCP
-- [ ] Extract all spacing/sizing values
-- [ ] Map colors to globals.css variables (add if missing)
-- [ ] Download and save images to `nextjs/public/`
-- [ ] Use appropriate shadcn components
-- [ ] Create Next.js API route for data fetching
-- [ ] Implement page with server components + auth
-- [ ] Verify pixel-perfect match against Figma overlay
-
-**Output Requirement**: Production-ready code that matches the design overlay perfectly with zero visual discrepancies.
-
-## Critical Integration Points
-
-### Clerk Webhook → Django User Sync
-
-[nextjs/src/app/api/webhooks/route.ts](../nextjs/src/app/api/webhooks/route.ts) forwards Clerk user events to Django's `/app/userCreated` endpoint to sync user data.
-
-## Common Tasks
-
-### Adding a Django Model
-
-1. Define in `app/models.py`.
-2. Run `python manage.py makemigrations app`
-3. Run `python manage.py migrate`
-4. Register in `app/admin.py` for admin interface
-
-### Creating a Django API Endpoint
-1. Add view in `app/views.py` with `@api_view()` decorator
-2. Map URL in `app/urls.py`
-
-### Adding a Frontend Page
-
-1. Create `nextjs/src/app/(dashboard)/[route]/page.tsx`
-2. Use server components with `await currentUser()` for auth
-3. Fetch data via Next.js API routes if it is not a server component, not direct Django calls
-4. Add route to `proxy.ts` if it needs auth protection
-
-### Debugging Docker Issues
-
-- Check logs: `docker compose logs backend` or `docker compose logs frontend`
-- Django migrations run automatically via `entrypoint.sh` build args
-- SQLite database persists in named volume (survives `docker compose down`)
-- Use `docker compose down -v` to wipe database (WARNING: data loss)
+For detailed implementation guidelines, refer to the specialized instruction files listed above.
