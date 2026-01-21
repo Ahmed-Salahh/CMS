@@ -9,6 +9,7 @@ const isPublicRoute = createRouteMatcher([
   "/success-stories(.*)",
   "/about-us(.*)",
   "/contact-us(.*)",
+  "/privacy-policy(.*)",
   "/",
 ]);
 
