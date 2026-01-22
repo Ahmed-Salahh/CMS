@@ -164,6 +164,120 @@ page.getByText("Success");
 
 ---
 
+## 🚨 CRITICAL: Strict Mode & Scoped Locators
+
+Playwright runs in **strict mode** by default - locators must match exactly ONE element.
+
+### Common Pitfalls & Solutions
+
+**Problem: Multiple elements with same role/name**
+Pages often have duplicate links (header, breadcrumbs, footer). Example: "Home" link appears 4 times.
+
+❌ **BAD - Will fail with strict mode violation:**
+```ts
+await expect(page.getByRole("link", { name: "Home" })).toBeVisible();
+await expect(page.getByRole("link", { name: "Media" })).toBeVisible();
+```
+
+✅ **GOOD - Scope to specific area:**
+```ts
+// Scope breadcrumb links to breadcrumb navigation
+const breadcrumb = page.getByRole("navigation", { name: "breadcrumb" });
+await expect(breadcrumb.getByRole("link", { name: "Media" })).toBeVisible();
+
+// Scope content to main area
+const mainContent = page.getByRole("main");
+await expect(mainContent.locator("h1").first()).toBeVisible();
+
+// Scope to header navigation
+const headerNav = page.getByRole("banner").getByRole("navigation");
+await expect(headerNav.getByRole("link", { name: "Home" })).toBeVisible();
+
+// Scope to footer
+const footer = page.getByRole("contentinfo");
+await expect(footer.getByRole("link", { name: "Privacy Policy" })).toBeVisible();
+```
+
+### Use `.first()` When Multiple Matches Expected
+
+When you know multiple elements exist and want the first one:
+
+```ts
+// Get first h1 in main content (avoids page hero h1)
+const title = page.getByRole("main").locator("h1").first();
+await expect(title).toBeVisible();
+
+// Get first matching text
+const notFoundText = page.getByText(/not found|404/i).first();
+await expect(notFoundText).toBeVisible();
+```
+
+### Scoping Reference Table
+
+| Area | Locator |
+|------|---------|
+| Header | `page.getByRole("banner")` |
+| Main Content | `page.getByRole("main")` |
+| Footer | `page.getByRole("contentinfo")` |
+| Breadcrumbs | `page.getByRole("navigation", { name: "breadcrumb" })` |
+| Header Nav | `page.getByRole("banner").getByRole("navigation")` |
+
+---
+
+## Connection Warm-up for Isolated Tests
+
+Test blocks without `beforeEach` navigation may fail with SSL/connection errors.
+
+❌ **BAD - Cold start can fail:**
+```ts
+test.describe("Direct URL Access", () => {
+  test("should handle 404", async ({ page }) => {
+    await page.goto("/non-existent-page"); // May fail with SSL error
+  });
+});
+```
+
+✅ **GOOD - Warm up connection first:**
+```ts
+test.describe("Direct URL Access", () => {
+  test("should handle 404", async ({ page }) => {
+    // Warm up connection
+    await page.goto("/");
+    
+    // Now test the actual URL
+    await page.goto("/non-existent-page");
+    await expect(page.getByText(/not found|404/i).first()).toBeVisible();
+  });
+});
+```
+
+---
+
+## Assertion Best Practices
+
+❌ **BAD - Using .catch() for assertions:**
+```ts
+await expect(page.getByText("Success")).toBeVisible().catch(() => {
+  expect(page.url()).toContain("success");
+});
+```
+
+✅ **GOOD - Use proper timeout and single assertion:**
+```ts
+await expect(page.getByText("Success")).toBeVisible({ timeout: 10000 });
+```
+
+✅ **GOOD - Use soft assertions for optional checks:**
+```ts
+// For elements that may or may not exist
+const hasElement = await page.getByText("Optional").isVisible().catch(() => false);
+if (hasElement) {
+  await expect(page.getByText("Optional")).toBeVisible();
+}
+```
+
+---
+
 ## Waiting Rules
 
 ✅ GOOD:
