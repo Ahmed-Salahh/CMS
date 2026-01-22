@@ -52,7 +52,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
 
   return (
     <select
-      className="w-[100%] lg:w-[15%] border rounded p-2"
+      className="w-full lg:w-[15%] border rounded p-2"
       value={value}
       onChange={(e) => onChange(e.target.value)}
     >

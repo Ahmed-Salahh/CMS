@@ -18,7 +18,7 @@ export default function RelatedEvents({ events }: RelatedEventsProps) {
       {/* Header */}
       <div className="relative mb-8">
         {/* Logo Container Background */}
-        <div className="absolute -left-11 top-0 h-[65px] w-[127px] bg-gradient-to-r from-primary to-primary/80 rounded-r-lg" />
+        <div className="absolute -left-11 top-0 h-[65px] w-[127px] bg-linear-to-r from-primary to-primary/80 rounded-r-lg" />
         
         <div className="flex items-end gap-4 pl-16">
           <h2 className="font-['Montserrat'] text-[40px] font-medium leading-[48px] tracking-[-0.4px] text-[#0a0d14]">
@@ -38,7 +38,7 @@ export default function RelatedEvents({ events }: RelatedEventsProps) {
         
         {/* Fade Effect on Right */}
         {events.length > 3 && (
-          <div className="absolute right-0 top-0 h-full w-[192px] bg-gradient-to-r from-transparent to-white pointer-events-none" />
+          <div className="absolute right-0 top-0 h-full w-[192px] bg-linear-to-r from-transparent to-white pointer-events-none" />
         )}
       </div>
     </div>
@@ -74,7 +74,7 @@ function RelatedEventCard({ event }: RelatedEventCardProps) {
             </Badge>
             <Badge
               variant="default"
-              className="rounded-md bg-black/40 px-2 py-1 font-['Montserrat'] text-xs font-medium text-white backdrop-blur-sm"
+              className="rounded-md bg-black/40 px-2 py-1 font-['Montserrat'] text-xs font-medium text-white backdrop-blur-xs"
             >
               {isUpcoming ? "Upcoming" : "Completed"}
             </Badge>
@@ -82,7 +82,7 @@ function RelatedEventCard({ event }: RelatedEventCardProps) {
 
           {/* Countdown Timer for Upcoming Events */}
           {isUpcoming && event.DaysLeft !== null && event.HoursLeft !== null && (
-            <div className="absolute -top-2 right-0 flex h-[42px] items-center gap-2 rounded-lg bg-white px-2 py-1 shadow-sm">
+            <div className="absolute -top-2 right-0 flex h-[42px] items-center gap-2 rounded-lg bg-white px-2 py-1 shadow-xs">
               <div className="flex flex-col items-center justify-center rounded-lg bg-[#f6f8fa] px-2 py-1.5">
                 <p className="font-['Montserrat'] text-center text-sm font-medium leading-5 tracking-[-0.084px] text-[#0a0d14]">
                   {String(event.DaysLeft).padStart(2, "0")}
@@ -114,7 +114,7 @@ function RelatedEventCard({ event }: RelatedEventCardProps) {
           <h3 className="font-['Montserrat'] text-base font-medium leading-5 tracking-[-0.096px] text-[#0a0d14]">
             {event.Title}
           </h3>
-          <p className="mt-2 line-clamp-3 bg-gradient-to-b from-[#525866] to-white bg-clip-text font-['Montserrat'] text-sm font-normal leading-5 tracking-[-0.084px] text-transparent">
+          <p className="mt-2 line-clamp-3 bg-linear-to-b from-[#525866] to-white bg-clip-text font-['Montserrat'] text-sm font-normal leading-5 tracking-[-0.084px] text-transparent">
             {event.Description}
           </p>
         </div>

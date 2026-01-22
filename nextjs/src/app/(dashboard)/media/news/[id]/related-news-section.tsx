@@ -28,7 +28,7 @@ export default function RelatedNewsSection({
         <h2 className="font-['Montserrat'] text-[40px] font-medium leading-[48px] tracking-[-0.4px] text-[#0a0d14]">
           Related News
         </h2>
-        <div className="mt-2 h-px w-[50px] bg-gradient-to-r from-[#00adb5] to-transparent" />
+        <div className="mt-2 h-px w-[50px] bg-linear-to-r from-[#00adb5] to-transparent" />
       </div>
 
       {/* Related News Grid */}
@@ -63,7 +63,7 @@ export default function RelatedNewsSection({
 
                 {/* Description */}
                 <div className="absolute inset-x-[22px] top-[207px]">
-                  <p className="line-clamp-3 bg-gradient-to-b from-[#525866] to-white bg-clip-text font-['Montserrat'] text-sm font-normal leading-5 tracking-[-0.084px] text-transparent">
+                  <p className="line-clamp-3 bg-linear-to-b from-[#525866] to-white bg-clip-text font-['Montserrat'] text-sm font-normal leading-5 tracking-[-0.084px] text-transparent">
                     {news.Description}
                   </p>
                 </div>
@@ -88,7 +88,7 @@ export default function RelatedNewsSection({
         </div>
 
         {/* Gradient Fade on Right */}
-        <div className="pointer-events-none absolute right-0 top-0 h-full w-48 bg-gradient-to-l from-white to-transparent" />
+        <div className="pointer-events-none absolute right-0 top-0 h-full w-48 bg-linear-to-l from-white to-transparent" />
       </div>
     </div>
   );

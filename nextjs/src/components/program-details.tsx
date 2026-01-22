@@ -46,7 +46,7 @@ const ProgramDetailsComponent: React.FC<ProgramDetailsProps> = ({
 
         {/* Status Badge */}
         <div
-          className={`absolute top-6 right-6 ${currentStatus.bgClass} backdrop-blur-sm rounded-lg px-4 py-2 font-medium`}
+          className={`absolute top-6 right-6 ${currentStatus.bgClass} backdrop-blur-xs rounded-lg px-4 py-2 font-medium`}
         >
           {currentStatus.text}
         </div>

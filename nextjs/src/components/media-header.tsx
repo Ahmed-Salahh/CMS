@@ -17,7 +17,7 @@ interface MediaHeaderProps {
 
 export default function MediaHeader({ currentPageTitle }: MediaHeaderProps) {
   return (
-    <div className="relative h-[244px] w-full overflow-hidden bg-gradient-to-r from-[#468796] to-[#3c4a78]">
+    <div className="relative h-[244px] w-full overflow-hidden bg-linear-to-r from-[#468796] to-[#3c4a78]">
       {/* Background Images */}
       <div
         className="absolute left-[-26px] top-[60px] h-[640px] w-[640px] opacity-30"

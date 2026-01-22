@@ -19,7 +19,7 @@ const EventCard: React.FC<EventCardComponent> = async ({ section_title }) => {
         <h2 className="text-lg font-semibold text-center">No data found</h2>
       ) : (
         <div className="flex flex-col sm:flex-row items-center sm:items-stretch border border-gray-300 rounded-xl overflow-hidden shadow-lg w-full transition-transform hover:scale-105">
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 text-white px-5 py-6 text-center w-full sm:w-32 flex flex-col items-center gap-3">
+          <div className="bg-linear-to-br from-blue-500 to-blue-600 text-white px-5 py-6 text-center w-full sm:w-32 flex flex-col items-center gap-3">
             <Calendar />
             <span className="text-xs sm:text-sm uppercase tracking-wide font-medium">
               {responseData.event.Date}

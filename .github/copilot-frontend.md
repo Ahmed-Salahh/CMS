@@ -290,8 +290,9 @@ const response = await fetch(`${process.env.API_URL}/app/endpoint/`, {
 
 Components located in `nextjs/src/components/ui/`:
 
-- Radix UI primitives + Tailwind CSS styling
+- Radix UI primitives + Tailwind CSS v4 styling
 - Configuration via `components.json`
+- Colors defined in `globals.css` using `@theme` directive
 - Common components: Button, Card, Dialog, Form, Input, Select, Table, Tabs
 
 ### Data Visualization

@@ -38,7 +38,7 @@ export function DateRangePicker({
             variant={"outline"}
             disabled={disabled}
             className={cn(
-              "w-[216px] justify-start text-left font-normal bg-white border-[#e2e4e9] rounded-lg shadow-sm h-10 text-sm text-[#868c98]",
+              "w-[216px] justify-start text-left font-normal bg-white border-[#e2e4e9] rounded-lg shadow-xs h-10 text-sm text-[#868c98]",
               !date && "text-[#868c98]",
             )}
           >

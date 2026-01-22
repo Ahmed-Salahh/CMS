@@ -199,7 +199,7 @@ export default function WorkflowInstancesFilters({
 
           <div className="flex flex-col justify-end space-y-2">
             <Button
-              variant={filters.show_assigned_to_me ? "default" : "outline"}
+              variant={filters.show_assigned_to_me ? "default" : "outline-solid"}
               onClick={() =>
                 handleFilterChange(
                   "show_assigned_to_me",

@@ -106,7 +106,7 @@ const ProgramsFilter: React.FC<ProgramsFilterProps> = ({ currentFilters }) => {
             disabled={isPending}
             className={`flex-1 px-2 py-1 rounded-md text-sm font-medium tracking-[-0.084px] transition-all ${
               activeTab === tab.value
-                ? "bg-white text-[#0a0d14] shadow-sm"
+                ? "bg-white text-[#0a0d14] shadow-xs"
                 : "bg-transparent text-[#868c98]"
             }`}
           >
@@ -126,7 +126,7 @@ const ProgramsFilter: React.FC<ProgramsFilterProps> = ({ currentFilters }) => {
             value={search}
             onChange={(e) => handleSearchChange(e.target.value)}
             disabled={isPending}
-            className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e2e4e9] rounded-lg shadow-sm text-sm text-[#868c98] placeholder:text-[#868c98]"
+            className="w-full pl-10 pr-4 py-2.5 bg-white border border-[#e2e4e9] rounded-lg shadow-xs text-sm text-[#868c98] placeholder:text-[#868c98]"
           />
         </div>
 
@@ -145,7 +145,7 @@ const ProgramsFilter: React.FC<ProgramsFilterProps> = ({ currentFilters }) => {
             onValueChange={handleSortChange}
             disabled={isPending}
           >
-            <SelectTrigger className="w-full bg-white border border-[#e2e4e9] rounded-lg shadow-sm h-10">
+            <SelectTrigger className="w-full bg-white border border-[#e2e4e9] rounded-lg shadow-xs h-10">
               <div className="flex items-center gap-2">
                 <ArrowDownUp className="w-5 h-5 text-[#868c98]" />
                 <SelectValue placeholder="Sort" />

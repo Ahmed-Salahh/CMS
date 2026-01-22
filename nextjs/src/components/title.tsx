@@ -9,7 +9,7 @@ const Title: React.FC<ITitleProps> = ({ children, className }) => {
   return (
     <p
       className={cn(
-        "text-2xl font-bold bg-gradient-to-r from-white via-primary to-primary text-transparent bg-clip-text",
+        "text-2xl font-bold bg-linear-to-r from-white via-primary to-primary text-transparent bg-clip-text",
         className
       )}
     >

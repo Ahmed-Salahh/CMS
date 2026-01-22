@@ -49,7 +49,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
   const currentStatus = statusConfig[status];
 
   return (
-    <Card className=" border border-[#e2e4e9] rounded-[18px] shadow-sm hover:shadow-md transition-shadow p-4">
+    <Card className=" border border-[#e2e4e9] rounded-[18px] shadow-xs hover:shadow-md transition-shadow p-4">
       <div className="relative w-full h-[200px] ">
         <Image
           src={image}
@@ -92,7 +92,7 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
           {/* Status Badge - Bottom Center */}
           <div
-            className={`${currentStatus.bgClass} backdrop-blur-sm rounded-r-md px-3 py-1 flex items-center gap-1`}
+            className={`${currentStatus.bgClass} backdrop-blur-xs rounded-r-md px-3 py-1 flex items-center gap-1`}
           >
             <div className="w-4 h-4 relative">
               <div className="absolute inset-[18.75%] rounded-full border-2 border-white" />
@@ -140,10 +140,10 @@ const ProgramCard: React.FC<ProgramCardProps> = ({
 
           {/* Description with opacity overlay */}
           <div className="relative mb-4">
-            <CardDescription className="text-sm text-[#525866] leading-5 line-clamp-[5] text-justify">
+            <CardDescription className="text-sm text-[#525866] leading-5 line-clamp-5 text-justify">
               {description}
             </CardDescription>
-            <div className="absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+            <div className="absolute bottom-0 left-0 right-0 h-6 bg-linear-to-t from-white to-transparent pointer-events-none"></div>
           </div>
         </div>
 

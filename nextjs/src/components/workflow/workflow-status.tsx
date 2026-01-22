@@ -42,7 +42,7 @@ export function WorkflowStatus({
   };
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-sm border">
+    <div className="bg-white p-4 rounded-lg shadow-xs border">
       <h3 className="text-lg font-semibold mb-3 text-gray-800">
         Workflow Status
       </h3>

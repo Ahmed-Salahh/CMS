@@ -269,7 +269,7 @@ export function WorkflowRunner({
       <div className="max-w-2xl mx-auto mt-8">
         <div className="bg-green-50 border border-green-200 rounded-lg p-6">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <svg
                 className="h-5 w-5 text-green-400"
                 viewBox="0 0 20 20"

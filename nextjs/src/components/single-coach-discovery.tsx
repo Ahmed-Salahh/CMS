@@ -31,7 +31,7 @@ const SingleCoachDiscovery: React.FC<ISingleCoachDiscoveryProps> = ({
           width={500}
           height={500}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+        <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent"></div>
         <h1 className="absolute bottom-6 left-6 text-4xl font-bold text-white">
           {CoachName}
         </h1>

@@ -5,7 +5,7 @@ import { Forward } from "lucide-react";
 
 const ProgramsHeader = () => {
   return (
-    <div className="w-full bg-white rounded-2xl shadow-sm p-6 mb-6">
+    <div className="w-full bg-white rounded-2xl shadow-xs p-6 mb-6">
       <div className="flex  items-start justify-between gap-20">
         {/* Left Section - Title and Description */}
         <div className="flex-1">
@@ -26,7 +26,7 @@ const ProgramsHeader = () => {
         </div>
 
         {/* Right Section - CTA Card */}
-        <div className="flex-[0.7] bg-gradient-to-b from-transparent to-[#f6f8fa] border border-transparent rounded-2xl p-5 flex flex-col gap-4">
+        <div className="flex-[0.7] bg-linear-to-b from-transparent to-[#f6f8fa] border border-transparent rounded-2xl p-5 flex flex-col gap-4">
           <div className="flex flex-col gap-2">
             <h3 className="text-lg font-medium text-[#3b3b3b] leading-6 tracking-[-0.27px]">
               Want to know more?
@@ -36,7 +36,7 @@ const ProgramsHeader = () => {
             </p>
           </div>
           <Button
-            className="w-full bg-white border border-[#e2e4e9] text-[#525866] hover:bg-[#f6f8fa] shadow-sm rounded-lg"
+            className="w-full bg-white border border-[#e2e4e9] text-[#525866] hover:bg-[#f6f8fa] shadow-xs rounded-lg"
             variant="outline"
           >
             Ask Your Question

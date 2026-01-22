@@ -20,7 +20,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, breadcrumbs = [] }) => {
   return (
     <div className="relative w-full h-[180px] overflow-hidden">
       {/* Gradient Background */}
-      <div className="absolute inset-0 bg-gradient-to-r from-[#468796] to-[#3c4a78]" />
+      <div className="absolute inset-0 bg-linear-to-r from-[#468796] to-[#3c4a78]" />
 
       {/* Background Images */}
       <div
@@ -28,7 +28,7 @@ const PageHero: React.FC<PageHeroProps> = ({ title, breadcrumbs = [] }) => {
         style={{ backgroundImage: `url(${bgImage})` }}
       />
       <div
-        className="absolute inset-0 opacity-5 bg-cover bg-center blur-sm"
+        className="absolute inset-0 opacity-5 bg-cover bg-center blur-xs"
         style={{ backgroundImage: `url(${bgImage})` }}
       />
 

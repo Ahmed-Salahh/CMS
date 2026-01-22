@@ -73,7 +73,7 @@ export default async function MediaDetailsPage({ params }: PageProps) {
       {/* Main Content */}
       <div className="relative bg-[#f6f8fa] pb-20">
         {/* White Background Overlay for Content Section */}
-        <div className="absolute left-0 top-0 h-[824px] w-[1077px] bg-gradient-to-r from-[#f6f8fa] to-[#f6f8fa]" />
+        <div className="absolute left-0 top-0 h-[824px] w-[1077px] bg-linear-to-r from-[#f6f8fa] to-[#f6f8fa]" />
 
         <div className="container relative mx-auto px-11">
           {/* Event Hero Section with Sidebar */}

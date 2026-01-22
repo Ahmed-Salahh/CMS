@@ -47,7 +47,7 @@ export default function MediaCard({ media, onClick }: MediaCardProps) {
           {isEvent && media.EventStatus && (
             <Badge
               variant="default"
-              className="bg-black/40 text-white backdrop-blur-sm font-['Montserrat'] hover:bg-black/50"
+              className="bg-black/40 text-white backdrop-blur-xs font-['Montserrat'] hover:bg-black/50"
             >
               {media.EventStatus === "upcoming" ? "Upcoming" : "Completed"}
             </Badge>
@@ -57,7 +57,7 @@ export default function MediaCard({ media, onClick }: MediaCardProps) {
           {isGallery && media.Facility && (
             <Badge
               variant="default"
-              className="bg-black/40 text-white backdrop-blur-sm font-['Montserrat'] hover:bg-black/50"
+              className="bg-black/40 text-white backdrop-blur-xs font-['Montserrat'] hover:bg-black/50"
             >
               {media.Facility}
             </Badge>
@@ -96,7 +96,7 @@ export default function MediaCard({ media, onClick }: MediaCardProps) {
 
         {/* Play Icon for Gallery Videos */}
         {isGallery && media.MediaType === "video" && (
-          <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 p-1 backdrop-blur-sm">
+          <div className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-black/40 p-1 backdrop-blur-xs">
             <Play className="h-8 w-8 fill-[#cdd0d5] text-[#cdd0d5]" />
           </div>
         )}

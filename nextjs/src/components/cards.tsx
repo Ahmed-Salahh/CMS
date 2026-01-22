@@ -86,19 +86,19 @@ const Cards: React.FC<CardsProps> = async (props) => {
             <h4 className="font-medium text-blue-800 mb-3">How to get access:</h4>
             <ul className="space-y-2 text-blue-700">
               <li className="flex items-start">
-                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
+                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 shrink-0" />
                 <span>Open the <strong className="font-semibold">Django admin</strong> interface</span>
               </li>
               <li className="flex items-start">
-                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
+                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 shrink-0" />
                 <span>Go to the <strong className="font-semibold">Reports Group</strong> table under the <strong className="font-semibold">Reports</strong> section</span>
               </li>
               <li className="flex items-start">
-                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
+                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 shrink-0" />
                 <span>Add one or more reports, and assign them to the appropriate <strong className="font-semibold">User Group</strong></span>
               </li>
               <li className="flex items-start">
-                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
+                <ChevronRight className="w-5 h-5 mr-2 mt-0.5 text-blue-500 shrink-0" />
                 <span>All users in that group will then have access to those reports</span>
               </li>
             </ul>

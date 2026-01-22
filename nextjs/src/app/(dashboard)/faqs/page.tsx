@@ -216,7 +216,7 @@ export default async function FAQsPage() {
       {/* Main Content Area */}
       <div className="relative flex-1">
         {/* Background gradient */}
-        <div className="absolute right-0 top-0 h-full w-[78%] bg-gradient-to-r from-[#f6f8fa] to-[#f6f8fa]" />
+        <div className="absolute right-0 top-0 h-full w-[78%] bg-linear-to-r from-[#f6f8fa] to-[#f6f8fa]" />
 
         {/* Content Container */}
         <div className="relative container mx-auto px-[44px]">

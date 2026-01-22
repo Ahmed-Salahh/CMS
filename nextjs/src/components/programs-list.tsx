@@ -50,7 +50,7 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
           {programs.length >= 2 && (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
               {/* Main Featured Card */}
-              <div className="lg:col-span-2 bg-white border border-[#e2e4e9] rounded-[18px] shadow-sm">
+              <div className="lg:col-span-2 bg-white border border-[#e2e4e9] rounded-[18px] shadow-xs">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-4 h-full">
                   {/* Image Section */}
                   <div className="relative ">
@@ -106,7 +106,7 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
                           {programs[0].TargetAudience}
                         </span>
                       </div>
-                      <div className="backdrop-blur-sm bg-black/40 rounded-r-md px-3 py-1 flex items-center gap-1">
+                      <div className="backdrop-blur-xs bg-black/40 rounded-r-md px-3 py-1 flex items-center gap-1">
                         <div className="w-4 h-4 relative">
                           <div className="absolute inset-[18.75%] rounded-full border-2 border-white" />
                           <div
@@ -148,10 +148,10 @@ const ProgramsList: React.FC<ProgramsListProps> = ({
 
                       {/* Description with opacity overlay */}
                       <div className="relative mb-4">
-                        <p className="text-sm text-[#525866] leading-5 line-clamp-[13] text-justify">
+                        <p className="text-sm text-[#525866] leading-5 line-clamp-13 text-justify">
                           {programs[0].ProgramDescription}
                         </p>
-                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white to-transparent pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-8 bg-linear-to-t from-white to-transparent pointer-events-none"></div>
                       </div>
                     </div>
 

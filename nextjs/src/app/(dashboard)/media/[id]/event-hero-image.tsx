@@ -32,7 +32,7 @@ export default function EventHeroImage({ media, isUpcoming }: EventHeroImageProp
           </Badge>
           <Badge
             variant="default"
-            className="rounded-md bg-black/40 px-2 py-1 font-['Montserrat'] text-xs font-medium text-white backdrop-blur-sm"
+            className="rounded-md bg-black/40 px-2 py-1 font-['Montserrat'] text-xs font-medium text-white backdrop-blur-xs"
           >
             {isUpcoming ? "Upcoming" : "Completed"}
           </Badge>
@@ -41,7 +41,7 @@ export default function EventHeroImage({ media, isUpcoming }: EventHeroImageProp
 
       {/* Countdown Timer for Upcoming Events */}
       {isUpcoming && media.DaysLeft !== null && media.HoursLeft !== null && (
-        <div className="absolute right-[11px] top-[11px] flex h-[42px] items-center gap-2 rounded-lg bg-white px-3 py-1 shadow-sm">
+        <div className="absolute right-[11px] top-[11px] flex h-[42px] items-center gap-2 rounded-lg bg-white px-3 py-1 shadow-xs">
           <div className="flex flex-col items-center justify-center rounded-lg bg-[#f6f8fa] px-2 py-1.5">
             <p className="font-['Montserrat'] text-center text-sm font-medium leading-5 tracking-[-0.084px] text-[#0a0d14]">
               {String(media.DaysLeft).padStart(2, "0")}

@@ -13,7 +13,7 @@ This is a full-stack application with a **Django REST backend** and **Next.js 16
 
 ### Technology Stack
 
-- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS, shadcn/ui components
+- **Frontend**: Next.js 16, React 19, TypeScript, Tailwind CSS v4 (CSS-first configuration), shadcn/ui components
 - **Backend**: Django 5.1, Django REST Framework, django-unfold admin
 - **Database**: SQLite with volume persistence
 - **Auth**: Clerk (authentication) + Django (authorization)
@@ -66,6 +66,20 @@ Detailed implementation rules are split across specialized files:
 1. **Backend**: Create Django model → migrate → add API endpoint → update URLs
 2. **Frontend**: Create page in `app/(dashboard)/[route]/` → extract components → add types → test with Playwright
 3. **Integration**: Use server components for data fetching → pass user email for auth
+
+### Implementing from Figma Design (One-Prompt Workflow)
+
+When given a Figma URL:
+
+1. **Fetch design** using MCP tools
+2. **Update colors** in `globals.css` (@theme block + @layer base) if needed
+3. **Configure fonts** in `@theme` block or `layout.tsx` if needed
+4. **Use shadcn/ui components** (never custom implementations)
+5. **Implement responsive design** (mobile → tablet → desktop)
+6. **Download images** to `public/`
+7. **Extract components** (follow frontend rules)
+8. **Generate Playwright tests**
+9. **Complete in ONE TURN** - don't stop midway
 
 ### Project Structure
 

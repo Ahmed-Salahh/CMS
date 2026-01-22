@@ -220,7 +220,7 @@ export function FormRenderer({
       {showSuccessMessage && form.submitAction?.type === "message" && (
         <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <svg
                 className="h-5 w-5 text-green-400"
                 viewBox="0 0 20 20"
