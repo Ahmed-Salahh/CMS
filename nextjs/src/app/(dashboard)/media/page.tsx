@@ -154,9 +154,13 @@ export default async function MediaPage({ searchParams }: PageProps) {
               <>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                   {media.map((item: MediaItem) => {
-                    const href = item.Type === "news" 
-                      ? `/media/news/${item.MediaID}`
-                      : `/media/${item.MediaID}`;
+                    // Determine the correct link based on media type
+                    let href = `/media/${item.MediaID}`;
+                    if (item.Type === "news") {
+                      href = `/media/news/${item.MediaID}`;
+                    } else if (item.Type === "events") {
+                      href = `/media/events/${item.MediaID}`;
+                    }
                     
                     return (
                       <Link
